@@ -88,8 +88,27 @@ h1.title {
 
 /*                             Tile Container                                           */
 .tile-container {
-    z-index: 2;
-    position: absolute;
+  z-index: 2;
+  position: absolute;
+  padding: 15px 0px 0px 15px;
+}
+
+.tile {
+  width: 106.25px;
+  height: 106.25px;
+  position: absolute;
+  margin-right: 15px;
+  float: left;
+  border-radius: 3px;
+  border: 1px #2d2d30 solid;
+  background:#abb2bf;
+
+  font-size: 60px;
+  font-weight: bold;
+  margin: 0;
+  display: block;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  color: #282c34;
 }
 
 
