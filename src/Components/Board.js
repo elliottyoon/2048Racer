@@ -1,22 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TileContainer from './TileContainer.js'
 import Square from './Square.js'
 
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      score: 0,
+    }
+
+  }
+
   renderSquare(i) {
     return <Square />;
   }
 
   render() {
-    const status = 'Score: ';
-
     return (
       <div>
         <div className="heading">
             <h1 className="title">4096</h1>
         </div>
-        <div className="status">{status}</div>
+        <div className="status">{'Time: idk man'}</div>
         <div className="board-container">
             <div className="board-row">
             {this.renderSquare(0)}
@@ -43,7 +49,7 @@ class Board extends React.Component {
             {this.renderSquare(15)}          
             </div>
         </div>
-        <TileContainer />
+        <TileContainer/>
       </div>
     );
   }

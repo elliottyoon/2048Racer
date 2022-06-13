@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Tile from './Tile.js'
 
 class TileContainer extends React.Component {
@@ -7,25 +6,27 @@ class TileContainer extends React.Component {
         super(props);
 
         this.state = {
-            randX: Math.floor(Math.random() * 4),
-            randY: Math.floor(Math.random() * 4),
             currVal: Math.floor(Math.random() * 10) < 2 ? 4 : 2,
             gameState: [
                 ['', '', '', ''],
                 ['', '', '', ''],
                 ['', '', '', ''],
                 ['', '', '', ''],
-            ]
+            ],
+            currTiles: [],
         }
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
+        this.slideUp = this.slideUp.bind(this);
+
+        this.transpose = this.transpose.bind(this);
         this.updateGameState = this.updateGameState.bind(this);
 
         // arrow key functionality
         window.addEventListener('keydown', this.handleKeyPress)
 
-        // add first two initial tiles
+        /******** add first two initial tiles *********/
         const x1 = Math.floor(Math.random() * 4);
         const y1 = Math.floor(Math.random() * 4);
         const val1 = Math.floor(Math.random() * 10) < 2 ? 4 : 2;
@@ -41,6 +42,8 @@ class TileContainer extends React.Component {
 
         this.updateGameState(x1, y1, val1);
         this.updateGameState(x2, y2, val2);
+
+        /********************************************* */
     }
 
     handleKeyPress(event) {
@@ -50,6 +53,7 @@ class TileContainer extends React.Component {
             // up
             case 'ArrowUp':
             case 'w':
+                this.slideUp();
                 break;
             // down
             case 'ArrowDown':
@@ -66,14 +70,47 @@ class TileContainer extends React.Component {
         }
     }
 
+    slideUp() {
+        // gets array of columns from array of rows
+        const cols = this.transpose(this.state.gameState);
+
+        // for each column
+        for (let col = 0; col < 4; col++) {
+            // no merges for now, just sliding
+        }
+    }
+
+    transpose(array) {
+        let newArr = [['', '', '', ''], // col 0
+                    ['', '', '', ''], // col 1
+                    ['', '', '', ''], // col 2
+                    ['', '', '', '']] // col 3
+        let val = '';
+
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                val = array[i][j];
+                if (val != '')  {
+                    newArr[j][i] = val;
+                }
+            }
+        }
+
+        return newArr;
+    }
+
     updateGameState(row, col, val) {
         let tempState = this.state.gameState;
         tempState[row][col] = val;
 
         this.setState = {
             gameState: tempState,
+            currTiles: this.state.currTiles.push({
+                "row": row,
+                "col": col,
+                "val": val,
+            })
         }
-
     }
 
     renderTile(i, j, val) {
@@ -88,7 +125,8 @@ class TileContainer extends React.Component {
         return (
             <Tile key={`${i} ${j}`} 
                   value={val} 
-                  style={styles}/>
+                  style={styles}
+                  id={"tile-"+ i + "-" + j}/>
         )
     }
     
