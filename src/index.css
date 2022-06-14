@@ -21,6 +21,7 @@ h1.title {
 /*                             Board Container                                           */
 
 @media screen and (max-width: 520px) {
+  /* ********* this is super unfinished, only works for desktop atm */
     .board-container {
         z-index: 1;
         border-radius: 6px;
@@ -109,6 +110,11 @@ h1.title {
   display: block;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   color: #282c34;
+  
+  -webkit-transition: ease-in-out 0.1s;
+  -moz-transition: ease-in-out 0.1s;
+  -o-transition: ease-in-out 0.1s;
+  transition: ease-in-out 0.1s;
 }
 
 
