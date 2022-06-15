@@ -105,10 +105,10 @@ class TileContainer extends React.Component {
                             lendpoint = idxMerge["index"];
                             
                             // merge animation
-                            let promise = this.mergeTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
+                            let promise = await this.mergeTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
                             
                             // updates gameState
-                            cols[col][index] = promise;
+                            cols[col][index] = cols[col][i];
                             cols[col][i] = '';
 
                         } else {
@@ -118,7 +118,7 @@ class TileContainer extends React.Component {
                             
 
                             // updates gameState
-                            cols[col][index] = promise;
+                            cols[col][index] = cols[col][i];
                             cols[col][i] = '';
                             
 
