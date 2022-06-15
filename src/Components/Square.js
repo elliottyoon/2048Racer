@@ -4,7 +4,7 @@ import React from 'react';
 class Square extends React.Component {
   render() {
     return (
-      <div className="square"></div>
+      <div className="square">{/* hello there ;) */}</div>
     );
   }
 }

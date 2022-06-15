@@ -1,4 +1,5 @@
-export findFurthestOpenSpace(index, arr, lendpoint) {
+
+export function findFurthestOpenSpace(index, arr, lendpoint) {
     // iterates backward through array starting at starting index and looks for 
     // furthest empty space such that the path to that space is empty
     let ptr = index - 1;

@@ -20,7 +20,6 @@ class TileContainer extends React.Component {
         this.renderTile = this.renderTile.bind(this);
         this.slideUp = this.slideUp.bind(this);
 
-        this.findFurthestOpenSpace = this.findFurthestOpenSpace.bind(this);
         this.slideTile = this.slideTile.bind(this);
         this.mergeTile = this.mergeTile.bind(this);
 
