@@ -1,6 +1,6 @@
 import React from 'react';
 import Tile from './Tile.js'
-import {findFurthestOpenSpace} from './helpers.js'
+import {findFurthestOpenSpace} from '../helpers.js'
 
 class TileContainer extends React.Component {
     constructor(props) {
