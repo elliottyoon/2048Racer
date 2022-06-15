@@ -21,6 +21,7 @@ class TileContainer extends React.Component {
 
         this.findFurthestOpenSpace = this.findFurthestOpenSpace.bind(this);
         this.slideTile = this.slideTile.bind(this);
+        this.mergeTile = this.mergeTile.bind(this);
 
         this.transpose = this.transpose.bind(this);
         this.updateGameState = this.updateGameState.bind(this);
@@ -50,6 +51,7 @@ class TileContainer extends React.Component {
 
     handleKeyPress(event) {
         const key = event.key;
+        let arr = null;
 
         switch(key) {
             // up
@@ -75,38 +77,57 @@ class TileContainer extends React.Component {
     async slideUp() {
         // gets array of columns from array of rows
         const cols = this.transpose(this.state.gameState);
+        // temp index, didMerge
+        let idxMerge = null;
         // temp index
-        let tempIdx = 0;
+        let index = 0;
         // temp gameState
         let tempGameState = null;
+        // left endpoint for findFurthestOpenSpace (non-inclusive)
+        let lendpoint = -1; 
+        
 
         // for each column
         for (let col = 0; col < 4; col++) {
             /** Todo: add merges
              *        make slides async so that they happen at the same time
              */
-            // no merges for now, just sliding
             console.log(cols[col]);
+            lendpoint = -1;
             
-            for (let i = 1; i < 4; i++) {
-                // we only care if this is a nonempty tile
+            for (let i = 1; i < 4; i++) {      // we only care if this is a nonempty tile
                 if (cols[col][i] !== '') {
-                    tempIdx = this.findFurthestOpenSpace(i, cols[col]);
+                    idxMerge = this.findFurthestOpenSpace(i, cols[col], lendpoint);
                     // if there is a valid move
-                    if (tempIdx != i) {
-                        // slide animation
-                        this.slideTile(document.getElementById("tile-" + i + "-" + col), 0, tempIdx - i);
-                        await new Promise(r => setTimeout(r, 100));
-                        // updates gameState
-                        cols[col][tempIdx] = cols[col][i];
-                        cols[col][i] = '';
-                        
+                    if (idxMerge["index"] != i) {
+                        if (idxMerge["didMerge"]) {
+                            // updates lendpoint to the position of newly merged tile
+                            lendpoint = idxMerge["index"];
+                            
+                            // merge animation
+                            let promise = this.mergeTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
+                            
+                            // updates gameState
+                            cols[col][index] = promise;
+                            cols[col][i] = '';
 
-                        tempGameState = this.state.gameState;
-                        this.updateGameState([
-                            [tempIdx, col, cols[col][tempIdx]],
-                            [i, col, '']
-                        ]);
+                        } else {
+                            // slide animation
+                            index = idxMerge["index"];
+                            let promise = await this.slideTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
+                            
+
+                            // updates gameState
+                            cols[col][index] = promise;
+                            cols[col][i] = '';
+                            
+
+                            tempGameState = this.state.gameState;
+                            this.updateGameState([
+                                [index, col, cols[col][index]],
+                                [i, col, '']
+                            ]);
+                        }
                     }
                 }
             }
@@ -115,22 +136,35 @@ class TileContainer extends React.Component {
         
     }
 
-    findFurthestOpenSpace(index, arr) {
+    findFurthestOpenSpace(index, arr, lendpoint) {
         // iterates backward through array starting at starting index and looks for 
         // furthest empty space such that the path to that space is empty
         let ptr = index - 1;
-        while (-1 < ptr) {
+        let indexVal = arr[index];
+
+        while (lendpoint < ptr) {
+            if (arr[ptr] == indexVal) return {index: ptr, didMerge: true};
             if (arr[ptr] !== '') break;
             ptr -= 1;
         }
-        return ptr + 1;
+        return {index: ptr + 1, didMerge: false};
     }
 
-    slideTile(tile, dx, dy) {
+    async slideTile(tile, dx, dy) {
         // negative dx -> left
         // negative dy -> up
         tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
-        
+        await new Promise(r => setTimeout(r, 200));
+        return tile.textContent;
+    }
+
+    async mergeTile(tile, dx, dy) {
+        let val = Number(tile.textContent) * 2;
+        tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
+        await new Promise(r => setTimeout(r, 200));
+        // double value 
+        tile.textContent = val;
+        return val;
     }
 
     transpose(array) {
