@@ -1,5 +1,6 @@
 import React from 'react';
 import Tile from './Tile.js'
+import {findFurthestOpenSpace} from './helpers.js'
 
 class TileContainer extends React.Component {
     constructor(props) {
@@ -97,7 +98,7 @@ class TileContainer extends React.Component {
             
             for (let i = 1; i < 4; i++) {      // we only care if this is a nonempty tile
                 if (cols[col][i] !== '') {
-                    idxMerge = this.findFurthestOpenSpace(i, cols[col], lendpoint);
+                    idxMerge = findFurthestOpenSpace(i, cols[col], lendpoint);
                     // if there is a valid move
                     if (idxMerge["index"] != i) {
                         if (idxMerge["didMerge"]) {
@@ -134,20 +135,6 @@ class TileContainer extends React.Component {
         }
 
         
-    }
-
-    findFurthestOpenSpace(index, arr, lendpoint) {
-        // iterates backward through array starting at starting index and looks for 
-        // furthest empty space such that the path to that space is empty
-        let ptr = index - 1;
-        let indexVal = arr[index];
-
-        while (lendpoint < ptr) {
-            if (arr[ptr] == indexVal) return {index: ptr, didMerge: true};
-            if (arr[ptr] !== '') break;
-            ptr -= 1;
-        }
-        return {index: ptr + 1, didMerge: false};
     }
 
     async slideTile(tile, dx, dy) {
