@@ -2,6 +2,13 @@ import React from 'react';
 import Tile from './Tile.js'
 import {findFurthestOpenSpace} from '../helpers.js'
 
+/*
+
+* todo: animation stuff ahhhh
+    - more specifically, need to find to update state after (and only after) window.requestAnimationFrame in the slide functions
+
+*/
+
 class TileContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -18,11 +25,16 @@ class TileContainer extends React.Component {
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
+
         this.slideUp = this.slideUp.bind(this);
+        this.slideDown = this.slideDown.bind(this);
+        this.slideRight = this.slideRight.bind(this);
+        this.slideLeft = this.slideLeft.bind(this);
 
-        this.slideTile = this.slideTile.bind(this);
         this.mergeTile = this.mergeTile.bind(this);
-
+        this.slideTile = this.slideTile.bind(this);
+ 
+        this.slideHelper = this.slideHelper.bind(this);
         this.transpose = this.transpose.bind(this);
         this.updateGameState = this.updateGameState.bind(this);
 
@@ -62,95 +74,241 @@ class TileContainer extends React.Component {
             // down
             case 'ArrowDown':
             case 's':
+                this.slideDown();
                 break;
             // right
             case 'ArrowRight':
             case 'd':
+                this.slideRight();
                 break;
             // left
             case 'ArrowLeft':
             case 'a':
+                this.slideLeft();
                 break;
         }
     }
 
     async slideUp() {
-        // gets array of columns from array of rows
+        // temporary gameState, oriented so that we slide along inner array
         const cols = this.transpose(this.state.gameState);
-        // temp index, didMerge
-        let idxMerge = null;
-        // temp index
-        let index = 0;
-        // temp gameState
-        let tempGameState = null;
-        // left endpoint for findFurthestOpenSpace (non-inclusive)
-        let lendpoint = -1; 
+        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
+        let changes = this.slideHelper(cols);
 
-        // for each column
-        for (let col = 0; col < 4; col++) {
-            /** Todo: add merges
-             *        make slides async so that they happen at the same time
-             */
-            console.log(cols[col]);
-            lendpoint = -1;
-            
-            for (let i = 1; i < 4; i++) {      // we only care if this is a nonempty tile
-                if (cols[col][i] !== '') {
-                    idxMerge = findFurthestOpenSpace(i, cols[col], lendpoint);
-                    // if there is a valid move
-                    if (idxMerge["index"] != i) {
-                        if (idxMerge["didMerge"]) {
-                            // updates lendpoint to the position of newly merged tile
-                            lendpoint = idxMerge["index"];
-                            
-                            // merge animation
-                            let promise = await this.mergeTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
-                            
-                            // updates gameState
-                            cols[col][index] = cols[col][i];
-                            cols[col][i] = '';
+        // iterates through slides and merges: animates accordingly and then updates state after animations finish
+        // let animate = new Promise((resolve, reject) => {
+        //     window.requestAnimationFrame(async () => {
+        //         for (let c in changes) {
+        //             let change = changes[c];
+        //             // merge animation
+        //             if (change["didMerge"] == true) {
+        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
+        //             }
+        //             // slide animation
+        //             else {
+        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
+        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
+        //             }
+                    
+        //         }
+        //     });
+        //     resolve();
+        // });
 
-                        } else {
-                            // slide animation
-                            index = idxMerge["index"];
-                            let promise = await this.slideTile(document.getElementById("tile-" + i + "-" + col), 0, index - i);
-                            
-
-                            // updates gameState
-                            cols[col][index] = cols[col][i];
-                            cols[col][i] = '';
-                            
-
-                            tempGameState = this.state.gameState;
-                            this.updateGameState([
-                                [index, col, cols[col][index]],
-                                [i, col, '']
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-
-        
+        // animate.then((response) => {
+        //     // updates global gameState and rerenders page
+            this.setState({
+                gameState: this.transpose(cols)
+            });
+        // })
     }
+
+    async slideLeft() {
+        // temporary gameState, oriented so that we slide along inner array
+        const cols = this.state.gameState;
+        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
+        
+        let changes = this.slideHelper(cols);
+
+        // iterates through slides and merges: animates accordingly and then updates state after animations finish
+        // let animate = new Promise((resolve, reject) => {
+        //     window.requestAnimationFrame(async () => {
+        //         for (let c in changes) {
+        //             let change = changes[c];
+        //             // merge animation
+        //             if (change["didMerge"] == true) {
+        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["end"] - change["start"], 0);
+        //             }
+        //             // slide animation
+        //             else {
+        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
+        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["end"] - change["start"], 0);
+        //             }
+                    
+        //         }
+        //     });
+        //     resolve();
+        // });
+
+        // animate.then((response) => {
+        //     // updates global gameState and rerenders page
+            this.setState({
+                gameState: cols
+            });
+        // })
+    }
+
+    async slideDown() {
+        // temporary gameState, oriented so that we slide along inner array
+        const cols = this.transpose(this.state.gameState);
+        for (let c in cols) {
+            cols[c] = cols[c].reverse()
+        }
+        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
+        
+        let changes = this.slideHelper(cols);
+
+        // iterates through slides and merges: animates accordingly and then updates state after animations finish
+        // let animate = new Promise((resolve, reject) => {
+        //     window.requestAnimationFrame(async () => {
+        //         for (let c in changes) {
+        //             let change = changes[c];
+        //             // merge animation
+        //             if (change["didMerge"] == true) {
+        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["start"] - change["end"]);
+        //             }
+        //             // slide animation
+        //             else {
+        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
+        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0,  change["start"] - change["end"]);
+        //             }
+                    
+        //         }
+        //     });
+        //     resolve();
+        // });
+
+        // animate.then((response) => {
+        //     // updates global gameState and rerenders page
+            for (let c in cols) {
+                cols[c] = cols[c].reverse()
+            }
+            this.setState({
+                gameState: this.transpose(cols)
+            });
+        // })
+    }
+
+    async slideRight() {
+        // temporary gameState, oriented so that we slide along inner array
+        const cols = this.state.gameState;
+        for (let c in cols) {
+            cols[c] = cols[c].reverse()
+        }
+        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
+        
+        let changes = this.slideHelper(cols);
+
+        // iterates through slides and merges: animates accordingly and then updates state after animations finish
+        // let animate = new Promise((resolve, reject) => {
+        //     window.requestAnimationFrame(async () => {
+        //         for (let c in changes) {
+        //             let change = changes[c];
+        //             // merge animation
+        //             if (change["didMerge"] == true) {
+        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["start"] - change["end"], 0);
+        //             }
+        //             // slide animation
+        //             else {
+        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
+        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["start"] - change["end"], 0);
+        //             }
+                    
+        //         }
+        //     });
+        //     resolve();
+        // });
+
+        // animate.then((response) => {
+        //     // updates global gameState and rerenders page
+            for (let c in cols) {
+                cols[c] = cols[c].reverse()
+            }
+            this.setState({
+                gameState: cols
+            });
+        // })
+    }
+                            
+
 
     async slideTile(tile, dx, dy) {
         // negative dx -> left
         // negative dy -> up
         tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
-        await new Promise(r => setTimeout(r, 200));
+        //await new Promise(r => setTimeout(r, 200));
         return tile.textContent;
     }
 
     async mergeTile(tile, dx, dy) {
         let val = Number(tile.textContent) * 2;
         tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
-        await new Promise(r => setTimeout(r, 200));
+        //await new Promise(r => setTimeout(r, 200));
         // double value 
-        tile.textContent = val;
+        //tile.textContent = val;
         return val;
+    }
+    
+    slideHelper(cols) {
+        let changes = []
+        // for each column
+        for (let col = 0; col < 4; col++) {
+
+            // left endpoint for findFurthestOpenSpace (non-inclusive)
+            let lendpoint = -1;
+            
+            for (let i = 1; i < 4; i++) {      // we only care if this is a nonempty tile
+                if (cols[col][i] !== '') {
+                    // temp index, didMerge
+                    let idxMerge = findFurthestOpenSpace(i, cols[col], lendpoint);
+                    // if there is a valid move
+                    if (idxMerge["index"] != i) {
+                        // temp index
+                        let index = idxMerge["index"];
+
+                        if (idxMerge["didMerge"]) {
+                            changes.push({
+                                "outerIdx": col,
+                                "start": i,
+                                "end": idxMerge["index"],
+                                "didMerge": true,
+                            });
+
+                            // updates lendpoint to the position of newly merged tile
+                            lendpoint = index;
+                            
+                            // updates temporary game state
+                            cols[col][index] = cols[col][i] * 2;
+                            cols[col][i] = '';
+
+                        } else {
+                            changes.push({
+                                "outerIdx": col,
+                                "start": i,
+                                "end": idxMerge["index"],
+                                "didMerge": false,
+                            })
+
+                            // updates gameState
+                            cols[col][index] = cols[col][i];
+                            cols[col][i] = '';
+                        }
+                    }
+                }
+            }
+        }
+        return changes;
     }
 
     transpose(array) {
@@ -193,9 +351,9 @@ class TileContainer extends React.Component {
         const styles = {
             top: x + 'px',
             left: y + 'px',
-            // transform: 'translate(' + y + 'px, ' + x + 'px)',
+            transform: 'translate(0)'
         }
-        console.log("row: " + i + ", col: " + j + "value: "+ val);
+        console.log("row: " + i + ", col: " + j + ", value: "+ val);
         return (
             <Tile key={`${i} ${j}`} 
                   value={val} 
