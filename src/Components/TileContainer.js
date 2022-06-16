@@ -1,11 +1,15 @@
 import React from 'react';
 import Tile from './Tile.js'
-import {findFurthestOpenSpace} from '../helpers.js'
+import {findFurthestOpenSpace, generateRandomTile} from '../helpers.js'
 
 /*
 
-* todo: animation stuff ahhhh
-    - more specifically, need to find to update state after (and only after) window.requestAnimationFrame in the slide functions
+* todo: 
+    * animation stuff ahhhh
+        - more specifically, figure out
+        - how to update state after (and only after) window.requestAnimationFrame in the slide completes its taskss
+
+    * endgame functionality 
 
 */
 
@@ -25,6 +29,7 @@ class TileContainer extends React.Component {
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
+        this.insertRandomTile = this.insertRandomTile.bind(this);
 
         this.slideUp = this.slideUp.bind(this);
         this.slideDown = this.slideDown.bind(this);
@@ -41,22 +46,12 @@ class TileContainer extends React.Component {
         // arrow key functionality
         window.addEventListener('keydown', this.handleKeyPress)
 
-        /******** add first two initial tiles *********/
-        const x1 = Math.floor(Math.random() * 4);
-        const y1 = Math.floor(Math.random() * 4);
-        const val1 = Math.floor(Math.random() * 10) < 2 ? 4 : 2;
+        // add first two random tiles
+        const rand1 = generateRandomTile(this.state.gameState);
+        this.state.gameState[rand1["space"][0]][[rand1["space"][1]]] = rand1["val"];
 
-        let x2 = Math.floor(Math.random() * 4);
-        let y2 = Math.floor(Math.random() * 4);
-        const val2 = Math.floor(Math.random() * 10) < 2 ? 4 : 2;
-
-        while (x1 === x2 && y1 === y2) {
-            x2 = Math.floor(Math.random() * 4);
-            y2 = Math.floor(Math.random() * 4);
-        }
-
-        this.state.gameState[x1][y1] = val1;
-        this.state.gameState[x2][y2] = val2;
+        const rand2 = generateRandomTile(this.state.gameState);
+        this.state.gameState[rand2["space"][0]][[rand2["space"][1]]] = rand2["val"];
 
         /********************************************* */
     }
@@ -95,34 +90,37 @@ class TileContainer extends React.Component {
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
-
-        // iterates through slides and merges: animates accordingly and then updates state after animations finish
-        // let animate = new Promise((resolve, reject) => {
-        //     window.requestAnimationFrame(async () => {
-        //         for (let c in changes) {
-        //             let change = changes[c];
-        //             // merge animation
-        //             if (change["didMerge"] == true) {
-        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
-        //             }
-        //             // slide animation
-        //             else {
-        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
-        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
-        //             }
-                    
-        //         }
-        //     });
-        //     resolve();
-        // });
-
-        // animate.then((response) => {
-        //     // updates global gameState and rerenders page
+        console.log(changes)
+        if (changes.length > 0) {
             this.setState({
-                gameState: this.transpose(cols)
+                gameState: this.insertRandomTile(this.transpose(cols))
             });
-        // })
+        }
+        
     }
+
+    /* broken animation functionality. was in slideDirection, but putting here for now:
+
+    // iterates through slides and merges: animates accordingly and then updates state after animations finish
+            let animate = new Promise((resolve, reject) => {
+                window.requestAnimationFrame(async () => { 
+                    for (let c in changes) {
+                        let change = changes[c];
+                        // merge animation
+                        if (change["didMerge"] == true) {
+                            await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
+                        }
+                        // slide animation
+                        else {
+                            console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
+                            await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
+                        }
+                        
+                    }
+                });
+                resolve();
+            });
+    */
 
     async slideLeft() {
         // temporary gameState, oriented so that we slide along inner array
@@ -130,33 +128,11 @@ class TileContainer extends React.Component {
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
-
-        // iterates through slides and merges: animates accordingly and then updates state after animations finish
-        // let animate = new Promise((resolve, reject) => {
-        //     window.requestAnimationFrame(async () => {
-        //         for (let c in changes) {
-        //             let change = changes[c];
-        //             // merge animation
-        //             if (change["didMerge"] == true) {
-        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["end"] - change["start"], 0);
-        //             }
-        //             // slide animation
-        //             else {
-        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
-        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["end"] - change["start"], 0);
-        //             }
-                    
-        //         }
-        //     });
-        //     resolve();
-        // });
-
-        // animate.then((response) => {
-        //     // updates global gameState and rerenders page
+        if (changes.length > 0) {
             this.setState({
-                gameState: cols
+                gameState: this.insertRandomTile(cols)
             });
-        // })
+        }
     }
 
     async slideDown() {
@@ -168,36 +144,14 @@ class TileContainer extends React.Component {
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
-
-        // iterates through slides and merges: animates accordingly and then updates state after animations finish
-        // let animate = new Promise((resolve, reject) => {
-        //     window.requestAnimationFrame(async () => {
-        //         for (let c in changes) {
-        //             let change = changes[c];
-        //             // merge animation
-        //             if (change["didMerge"] == true) {
-        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["start"] - change["end"]);
-        //             }
-        //             // slide animation
-        //             else {
-        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
-        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0,  change["start"] - change["end"]);
-        //             }
-                    
-        //         }
-        //     });
-        //     resolve();
-        // });
-
-        // animate.then((response) => {
-        //     // updates global gameState and rerenders page
+        if (changes.length > 0) {
             for (let c in cols) {
                 cols[c] = cols[c].reverse()
             }
             this.setState({
-                gameState: this.transpose(cols)
+                gameState: this.insertRandomTile(this.transpose(cols))
             });
-        // })
+        }
     }
 
     async slideRight() {
@@ -209,36 +163,14 @@ class TileContainer extends React.Component {
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
-
-        // iterates through slides and merges: animates accordingly and then updates state after animations finish
-        // let animate = new Promise((resolve, reject) => {
-        //     window.requestAnimationFrame(async () => {
-        //         for (let c in changes) {
-        //             let change = changes[c];
-        //             // merge animation
-        //             if (change["didMerge"] == true) {
-        //                 await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["start"] - change["end"], 0);
-        //             }
-        //             // slide animation
-        //             else {
-        //                 console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
-        //                 await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), change["start"] - change["end"], 0);
-        //             }
-                    
-        //         }
-        //     });
-        //     resolve();
-        // });
-
-        // animate.then((response) => {
-        //     // updates global gameState and rerenders page
+        if (changes.length > 0) {
             for (let c in cols) {
                 cols[c] = cols[c].reverse()
             }
             this.setState({
-                gameState: cols
+                gameState: this.insertRandomTile(cols)
             });
-        // })
+        }
     }
                             
 
@@ -341,6 +273,13 @@ class TileContainer extends React.Component {
         this.setState({
             gameState: tempState, 
         });
+    }
+
+    insertRandomTile(arr) {
+        let tempGameState = arr;
+        let tmp = generateRandomTile(tempGameState);
+        tempGameState[tmp["space"][0]][[tmp["space"][1]]] = tmp["val"]
+        return tempGameState;
     }
 
     renderTile(i, j, val) {
