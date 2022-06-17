@@ -286,11 +286,47 @@ class TileContainer extends React.Component {
         // row i, column j
         const x = 15 + i * 121.25; // tile size = (106.25 + 15) = 121.25px
         const y = 15 + j * 121.25;    
+
+        // coloring
+        let color = '#abb2bf';
+        switch (val) {
+            case 4: 
+                color = '#7a82da';
+                break;
+            case 8:
+                color = '#9f7efe';
+                break;
+            case 16:
+                color = '#ff78f8';
+                break;
+            case 32:
+                color = '#f9c859';
+                break;
+            case 64: 
+                color = '#ce9887';
+                break;
+            case 128:
+                color = '#3fc56b';
+                break;
+            case 256:
+                color = '#3691ff';
+                break;
+            case 512:
+                color = '#ff936a';
+                break;
+            case 1024:
+                color = '#8e44ad';
+                break;
+            case 2048:
+                color = '#17a589';
+                break;
+        }
         
         const styles = {
             top: x + 'px',
             left: y + 'px',
-            transform: 'translate(0)'
+            transform: 'translate(0)',
+            background: color,
         }
         console.log("row: " + i + ", col: " + j + ", value: "+ val);
         return (
