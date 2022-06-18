@@ -1,6 +1,7 @@
 import React from 'react';
-import TileContainer from './TileContainer.js'
-import Square from './Square.js'
+import TileContainer from './TileContainer.js';
+import Timer from './Timer.js';
+import Square from './Square.js';
 
 class Board extends React.Component {
   constructor(props) {
@@ -8,29 +9,14 @@ class Board extends React.Component {
 
     this.state = {
       timeStart: (new Date()).getTime(),
-      minutesElapsed: 0,
-      secondsElapsed: 0,
     }
-
-    this.setTime = this.setTime.bind(this)
-
   }
 
   renderSquare(i) {
     return <Square />;
   }
 
-  componentWillMount() {
-    setInterval(this.setTime, 10);
-  }
-
-  setTime() {
-    this.setState({
-      minutesElapsed: Math.round(((new Date()).getTime() - this.state.timeStart) / 60000),
-      secondsElapsed: (Math.round(((new Date()).getTime() - this.state.timeStart) / 1000) % 60).toString().padStart(2, '0'),
-      msElapsed: (Math.round(((new Date()).getTime() - this.state.timeStart) / 10) % 100).toString().padStart(2, '0'),
-    })
-  }
+  
 
   render() {
     return (
@@ -38,7 +24,7 @@ class Board extends React.Component {
         <div className="heading">
             <h1 className="title">4096</h1>
         </div>
-        <div className="status">Time Elapsed: {this.state.minutesElapsed}:{this.state.secondsElapsed}.{this.state.msElapsed}</div>
+        <Timer timeStart={this.state.timeStart}/>
         <div className="board-container">
             <div className="board-row">
             {this.renderSquare(0)}

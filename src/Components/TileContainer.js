@@ -86,7 +86,7 @@ class TileContainer extends React.Component {
 
     async slideUp() {
         // temporary gameState, oriented so that we slide along inner array
-        const cols = this.transpose(this.state.gameState);
+        let cols = this.transpose(this.state.gameState);
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
@@ -126,7 +126,7 @@ class TileContainer extends React.Component {
 
     async slideLeft() {
         // temporary gameState, oriented so that we slide along inner array
-        const cols = this.state.gameState;
+        let cols = this.state.gameState;
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
@@ -139,16 +139,16 @@ class TileContainer extends React.Component {
 
     async slideDown() {
         // temporary gameState, oriented so that we slide along inner array
-        const cols = this.transpose(this.state.gameState);
+        let cols = this.transpose(this.state.gameState);
         for (let c in cols) {
-            cols[c] = cols[c].reverse()
+            cols[c].reverse()
         }
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
         let changes = this.slideHelper(cols);
         if (changes.length > 0) {
             for (let c in cols) {
-                cols[c] = cols[c].reverse()
+                cols[c].reverse()
             }
             this.setState({
                 gameState: this.insertRandomTile(this.transpose(cols))
@@ -158,16 +158,23 @@ class TileContainer extends React.Component {
 
     async slideRight() {
         // temporary gameState, oriented so that we slide along inner array
-        const cols = this.state.gameState;
+        let cols = this.state.gameState.slice();     
+
+        console.log('before: ')
+        console.log(cols);
         for (let c in cols) {
-            cols[c] = cols[c].reverse()
+            cols[c] = cols[c].slice().reverse()
+            console.log(cols[c])
         }
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
+        console.log('after: ');
+        console.log(cols);
         
         let changes = this.slideHelper(cols);
+        console.log(changes);
         if (changes.length > 0) {
             for (let c in cols) {
-                cols[c] = cols[c].reverse()
+                cols[c].reverse();
             }
             this.setState({
                 gameState: this.insertRandomTile(cols)
@@ -369,7 +376,6 @@ class TileContainer extends React.Component {
             
         }
         
-        console.log("row: " + i + ", col: " + j + ", value: "+ val);
         return (
             <Tile key={`${i} ${j}`} 
                   value={val} 
