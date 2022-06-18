@@ -26,6 +26,8 @@ class TileContainer extends React.Component {
                 ['', '', '', ''],
             ],
         }
+
+        this.highlightedTile = null;
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
@@ -329,6 +331,12 @@ class TileContainer extends React.Component {
             }
 
         } else {
+            // removes highlight from current emphasized tile
+            if (this.highlightedTile !== null) {
+                document.getElementById(this.highlightedTile).style.removeProperty('box-shadow');
+            }
+            
+            this.highlightedTile = 'tile-'+ i + "-" + j;
             let boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
             switch (val) {
                 case 128:
