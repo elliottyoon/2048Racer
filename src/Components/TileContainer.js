@@ -101,6 +101,8 @@ class TileContainer extends React.Component {
 
     /* broken animation functionality. was in slideDirection, but putting here for now:
 
+    marge animation: animation: pop 200ms ease 100ms
+
     // iterates through slides and merges: animates accordingly and then updates state after animations finish
             let animate = new Promise((resolve, reject) => {
                 window.requestAnimationFrame(async () => { 
@@ -288,46 +290,85 @@ class TileContainer extends React.Component {
         const y = 15 + j * 121.25;    
 
         // coloring
-        let color = '#abb2bf';
-        switch (val) {
-            case 4: 
-                color = '#7a82da';
-                break;
-            case 8:
-                color = '#9f7efe';
-                break;
-            case 16:
-                color = '#ff78f8';
-                break;
-            case 32:
-                color = '#f9c859';
-                break;
-            case 64: 
-                color = '#ce9887';
-                break;
-            case 128:
-                color = '#3fc56b';
-                break;
-            case 256:
-                color = '#3691ff';
-                break;
-            case 512:
-                color = '#ff936a';
-                break;
-            case 1024:
-                color = '#8e44ad';
-                break;
-            case 2048:
-                color = '#17a589';
-                break;
+        let background = '#abb2bf';
+        let color = '#282c34';
+        let fontSize = '60px';
+        let styles = {};
+
+        if (val > 4) {
+            color = '#f9f6f2';
+        }
+
+
+        if (val < 128) {
+            switch (val) {
+                case 4: 
+                    background = '#eee1c9';
+                    break;
+                case 8:
+                    background = '#f3b27a';
+                    break;
+                case 16:
+                    background = '#f69664';
+                    break;
+                case 32:
+                    background = '#f77c5f';
+                    break;
+                case 64: //todo
+                    background = '#f75f3b';
+                    break;
+            }
+
+            styles = {
+                top: x + 'px',
+                left: y + 'px',
+                transform: 'translate(0)',
+                background: background,
+                color: color,
+                fontSize: fontSize,
+            }
+
+        } else {
+            let boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
+            switch (val) {
+                case 128:
+                    background = '#edd073';
+                    fontSize = '45px';
+                    break;
+                case 256:
+                    background = '#edcc62';
+                    fontSize = '45px';
+                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 32%), inset 0 0 0 1px rgb(255 255 255 / 19%)';
+                    break;
+                case 512:
+                    background = '#edc950';
+                    fontSize = '45px';
+                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 40%), inset 0 0 0 1px rgb(255 255 255 / 24%)';
+                    break;
+                case 1024:
+                    background = '#edc53f';
+                    fontSize = '35px';
+                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
+                    break;
+                case 2048:
+                    background = '#17a589';
+                    fontSize = '35px';
+                    // boxShadow = ...
+                    break;
+            }
+
+            styles = {
+                top: x + 'px',
+                left: y + 'px',
+                transform: 'translate(0)',
+                background: background,
+                fontSize: fontSize,
+                color: color,
+                boxShadow: boxShadow,
+            }
+            
         }
         
-        const styles = {
-            top: x + 'px',
-            left: y + 'px',
-            transform: 'translate(0)',
-            background: color,
-        }
         console.log("row: " + i + ", col: " + j + ", value: "+ val);
         return (
             <Tile key={`${i} ${j}`} 
