@@ -9,13 +9,29 @@ class Board extends React.Component {
 
     this.state = {
       timeStart: (new Date()).getTime(),
+      timeStopped: false,
     }
+
+    this.renderSquare = this.renderSquare.bind(this);
+    this.onChildMount = this.onChildMount.bind(this);
+    this.callStopTime = this.callStopTime.bind(this);
+    
+    this.setter = null;
+
   }
 
   renderSquare(i) {
     return <Square />;
   }
 
+  onChildMount(setter) {
+    this.setter = setter;
+  }
+
+  callStopTime() {
+    this.setter();
+  }
+  
   
 
   render() {
@@ -24,7 +40,7 @@ class Board extends React.Component {
         <div className="heading">
             <h1 className="title">4096</h1>
         </div>
-        <Timer timeStart={this.state.timeStart}/>
+        <Timer timeStart={this.state.timeStart} onMount={this.onChildMount}/>
         <div className="board-container">
             <div className="board-row">
             {this.renderSquare(0)}
@@ -51,7 +67,7 @@ class Board extends React.Component {
             {this.renderSquare(15)}          
             </div>
         </div>
-        <TileContainer/>
+        <TileContainer stopTime={this.callStopTime}/>
       </div>
     );
   }

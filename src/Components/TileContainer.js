@@ -19,6 +19,7 @@ class TileContainer extends React.Component {
 
         this.state = {
             currVal: Math.floor(Math.random() * 10) < 2 ? 4 : 2,
+            highestTile: 0,
             gameState: [
                 ['', '', '', ''],
                 ['', '', '', ''],
@@ -84,6 +85,8 @@ class TileContainer extends React.Component {
                 this.slideLeft();
                 break;
         }
+
+        // 
     }
 
     async slideUp() {
@@ -223,10 +226,18 @@ class TileContainer extends React.Component {
 
                             // updates lendpoint to the position of newly merged tile
                             lendpoint = index;
-                            
+
+                            let mergedValue = cols[col][i] * 2;
                             // updates temporary game state
-                            cols[col][index] = cols[col][i] * 2;
+                            cols[col][index] = mergedValue;
                             cols[col][i] = '';
+                            // updates highest tile state if necessary
+                            if (parseInt(mergedValue) > this.state.highestTile) {
+                                this.state.highestTile = parseInt(mergedValue);
+                                if (mergedValue == 2048) {
+                                    this.props.stopTime();
+                                }
+                            }
 
                         } else {
                             changes.push({
@@ -333,7 +344,13 @@ class TileContainer extends React.Component {
         } else {
             // removes highlight from current emphasized tile
             if (this.highlightedTile !== null) {
-                document.getElementById(this.highlightedTile).style.removeProperty('box-shadow');
+                try {
+                    document.getElementById(this.highlightedTile).style.removeProperty('box-shadow')
+                }
+                catch {
+                    console.log('Error finding tile to remove highlighting');
+                }
+                
             }
             
             this.highlightedTile = 'tile-'+ i + "-" + j;
@@ -359,6 +376,7 @@ class TileContainer extends React.Component {
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
                     break;
                 case 2048:
+                    
                     background = '#17a589';
                     fontSize = '35px';
                     // boxShadow = ...

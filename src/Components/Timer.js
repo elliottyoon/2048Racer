@@ -8,20 +8,33 @@ class Timer extends React.Component {
       value: props.value,
       minutesElapsed: 0,
       secondsElapsed: 0,
+      timeStopped: false,
     }
-    
-    this.setTime = this.setTime.bind(this);
-  }
-  componentWillMount() {
-    setInterval(this.setTime, 10);
+
+    this.stopTime = this.stopTime.bind(this);
   }
 
-  setTime() {
+  stopTime() {
+    console.log('hi');
     this.setState({
-      minutesElapsed: Math.round(((new Date()).getTime() - this.props.timeStart) / 60000),
-      secondsElapsed: (Math.round(((new Date()).getTime() - this.props.timeStart) / 1000) % 60).toString().padStart(2, '0'),
-      msElapsed: (Math.round(((new Date()).getTime() - this.props.timeStart) / 10) % 100).toString().padStart(2, '0'),
+      timeStopped: true,
     })
+  }
+  
+  componentWillMount() {
+    this.props.onMount(this.stopTime);
+
+    const interval = setInterval(() => {
+      if (!this.state.timeStopped) {
+        this.setState({
+          minutesElapsed: Math.floor(((new Date()).getTime() - this.props.timeStart) / 60000),
+          secondsElapsed: (Math.round(((new Date()).getTime() - this.props.timeStart) / 1000) % 60).toString().padStart(2, '0'),
+          msElapsed: (Math.round(((new Date()).getTime() - this.props.timeStart) / 10) % 100).toString().padStart(2, '0'),
+        });
+      } else {
+        clearInterval(interval);
+      }
+    }, 10);
   }
 
   render() {
