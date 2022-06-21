@@ -15,10 +15,9 @@ class Timer extends React.Component {
   }
 
   stopTime() {
-    console.log('hi');
     this.setState({
       timeStopped: true,
-    })
+    });
   }
   
   componentWillMount() {

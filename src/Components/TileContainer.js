@@ -9,7 +9,7 @@ import {findFurthestOpenSpace, generateRandomTile} from '../helpers.js'
         - more specifically, figure out
         - how to update state after (and only after) window.requestAnimationFrame in the slide completes its taskss
 
-    * endgame functionality 
+    * endgame functionality  
 
 */
 
@@ -29,6 +29,8 @@ class TileContainer extends React.Component {
         }
 
         this.highlightedTile = null;
+
+        this.resetBoard = this.resetBoard.bind(this);
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
@@ -56,12 +58,55 @@ class TileContainer extends React.Component {
         const rand2 = generateRandomTile(this.state.gameState);
         this.state.gameState[rand2["space"][0]][[rand2["space"][1]]] = rand2["val"];
 
+        this.highestTile = Math.max(rand1["val"], rand2["val"]);
+        this.props.updateHighestTile(this.highestTile);
+
         /********************************************* */
+    }
+
+    componentDidUpdate() {
+        // updates highest tile if necessary
+        const gsClone = this.state.gameState;
+        let updated = false;
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                if (gsClone[i][j] > this.highestTile) {
+                    this.highestTile = gsClone[i][j];
+                    updated = true;
+                }
+            }
+        }
+        if (updated) {
+            this.props.updateHighestTile(this.highestTile);
+        }
+    }
+
+    componentWillMount() {
+        this.props.onMount(this.resetBoard);
+    }
+
+    resetBoard() {
+        let gameState = [
+                ['', '', '', ''],
+                ['', '', '', ''],
+                ['', '', '', ''],
+                ['', '', '', ''],
+            ];
+        
+         // add first two random tiles
+        const rand1 = generateRandomTile(gameState);
+        gameState[rand1["space"][0]][[rand1["space"][1]]] = rand1["val"];
+
+        const rand2 = generateRandomTile(gameState);
+        gameState[rand2["space"][0]][[rand2["space"][1]]] = rand2["val"];
+
+        this.setState({
+            gameState: gameState,
+        });
     }
 
     handleKeyPress(event) {
         const key = event.key;
-        let arr = null;
 
         switch(key) {
             // up
@@ -85,8 +130,6 @@ class TileContainer extends React.Component {
                 this.slideLeft();
                 break;
         }
-
-        // 
     }
 
     async slideUp() {

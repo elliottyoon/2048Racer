@@ -1,5 +1,5 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 18px "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   margin: 20px;
   background-color: #1e1e1e;
   color: white;
@@ -9,10 +9,30 @@ ol, ul {
   padding-left: 30px;
 }
 
+
+main {
+  width: 500px;
+}
+
+aside {
+  box-sizing: border-box;
+  margin: 110px 0 0 50px;
+  border: 1px blue solid;
+  border-radius: 10px;
+  height: 500px;
+  width: 20%;
+  padding: 10px;
+
+  box-shadow: 0 1px 6px 0 #171717;
+  background: #303134;
+  border-color: rgba(223,225,229,0);
+}
+
 h1.title {
     font-size: 80px;
     font-weight: bold;
     margin: 0;
+    margin-bottom: 20px;
     display: block;
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     color: #007acc;
@@ -20,26 +40,29 @@ h1.title {
 
 /*                             Board Container                                           */
 
-@media screen and (max-width: 520px) {
+@media screen and (max-width: 720px) {
   /* ********* this is super unfinished, only works for desktop atm */
-    .board-container {
-        z-index: 1;
-        border-radius: 6px;
-        width: 280px;
-        height: 280px;
-        box-sizing: border-box;
-        font-size: 15px;
+    body {
+      background-color: red;
     }
 
-    .square {
-        border-radius: 3px;
-        width: 57.5px;
-        height: 57.5px;
-        margin-right: 10px;
-        float: left;
-        background: #3e3e42;
+    .game {
+      border: 1px solid green;
+    }
+
+    main {
+      margin-left: 0;
+      position: relative;
+      border: 1px solid green;
+    }
+
+    aside {
+      position: absolute;
+      bottom: 0;
     }
 }
+
+
 
 .board-container {
     z-index: 1;
@@ -47,8 +70,12 @@ h1.title {
     border-radius: 6px;
     padding: 15px 0px 0px 15px;
     background: #2d2d30;
+    border-color: rgba(223,225,229,0); 
+    box-shadow: 0 1px 6px 0 #171717;
+
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     font-size: 18px;
+
     width: 500px;
     height: 500px;
     box-sizing: border-box;
@@ -64,10 +91,7 @@ h1.title {
   display: table;
 }
 
-.status {
-  margin: 20px 0 10px 5px;
 
-}
 
 .square {
     width: 104.25px;
@@ -90,7 +114,8 @@ h1.title {
 /*                             Tile Container                                           */
 .tile-container {
   z-index: 2;
-  position: absolute;
+  position: relative;
+  /* position: absolute; */
   padding: 15px 0px 0px 15px;
 }
 
@@ -117,11 +142,24 @@ h1.title {
   transition: ease-in-out 0.1s; */
 }
 
+.reset-board {
+  height: 40px;
+  width: 100%;
+  background-color: #303134;
+  border: 1px solid #7a82da;
+  border-radius: 4px;
+  color: #e8eaed;
+}
+
+.reset-board:hover {
+  background-color: #7a82da;
+}
+
 
 .game {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .game-info {
