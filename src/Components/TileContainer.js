@@ -100,9 +100,12 @@ class TileContainer extends React.Component {
         const rand2 = generateRandomTile(gameState);
         gameState[rand2["space"][0]][[rand2["space"][1]]] = rand2["val"];
 
+        this.props.updateHighestTile(Math.max(rand1["val"], rand2["val"]));
+
         this.setState({
             gameState: gameState,
         });
+
     }
 
     handleKeyPress(event) {
