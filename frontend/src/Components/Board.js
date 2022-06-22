@@ -3,15 +3,20 @@ import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
 import Square from './Square.js';
 
+import { connect, sendMsg } from "../api"
+
 class Board extends React.Component {
   constructor(props) {
     super(props);
+    connect();
 
     this.state = {
       timeStart: (new Date()).getTime(),
       timeStopped: false,
       highestTile: 0,
     }
+
+    this.send = this.send.bind(this);
 
     this.renderSquare = this.renderSquare.bind(this);
     this.onTimerMount = this.onTimerMount.bind(this);
@@ -24,6 +29,11 @@ class Board extends React.Component {
     this.timeSetter = null;
     this.boardSetter = null;
 
+  }
+
+  send() {
+    console.log("hello");
+    sendMsg("hello");
   }
 
   renderSquare(i) {
@@ -94,6 +104,7 @@ class Board extends React.Component {
           <Timer timeStart={this.state.timeStart} onMount={this.onTimerMount}/>
           <p>Highest tile: {this.state.highestTile}</p>
           <button className={"reset-board"} onClick={this.resetBoard}>Reset Board</button>
+          <button onClick={this.send}> yo </button>
         </aside>
       </div>
     );
