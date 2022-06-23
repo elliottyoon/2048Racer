@@ -1,4 +1,8 @@
 import React from 'react';
+import 'balloon-css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRedo } from '@fortawesome/free-solid-svg-icons';
+
 import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
 import Square from './Square.js';
@@ -33,7 +37,7 @@ class Board extends React.Component {
 
   send() {
     console.log("hello");
-    sendMsg("hello");
+    sendMsg(`Highest tile: ${this.state.highestTile}.`);
   }
 
   renderSquare(i) {
@@ -56,6 +60,11 @@ class Board extends React.Component {
   }
   
   updateHighestTile(update) {
+    // winning condition
+    if (update == 8) {
+      sendMsg('I won');
+    }
+
     this.setState({
       highestTile: update,
     });
@@ -103,8 +112,15 @@ class Board extends React.Component {
         <aside>
           <Timer timeStart={this.state.timeStart} onMount={this.onTimerMount}/>
           <p>Highest tile: {this.state.highestTile}</p>
-          <button className={"reset-board"} onClick={this.resetBoard}>Reset Board</button>
-          <button onClick={this.send}> yo </button>
+          <button onClick={this.send}> Say hi to server </button>
+          <div className={"reset-board"}
+                tabIndex={"0"}
+                onClick={this.resetBoard}
+                aria-label="Reset board"
+                data-balloon-pos="right">
+            <FontAwesomeIcon icon={ faRedo } />
+          </div>
+          
         </aside>
       </div>
     );

@@ -450,7 +450,7 @@ class TileContainer extends React.Component {
     }
     
     render() {
-        console.log(this.state.gameState);
+        // console.log(this.state.gameState);
         const content = [];
         let temp = '';
         for (let i = 0; i < 4; i++) {

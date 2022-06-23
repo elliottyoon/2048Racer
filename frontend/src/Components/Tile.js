@@ -11,9 +11,9 @@ class Tile extends React.Component {
 
   render() {
     return (
-      <button className={"tile"} id={this.props.id} style={this.props.style}>
+      <div className={"tile"} id={this.props.id} style={this.props.style}>
         {this.props.value}
-      </button>
+      </div>
     );
   }
 }
