@@ -18,6 +18,7 @@ class Board extends React.Component {
       timeStart: (new Date()).getTime(),
       timeStopped: false,
       highestTile: 0,
+      chatHistory: [],
     }
 
     this.send = this.send.bind(this);
@@ -69,10 +70,26 @@ class Board extends React.Component {
       highestTile: update,
     });
   }
+
+  componentDidMount() {
+    connect((msg) => {
+      console.log("New Message")
+      this.setState(prevState => ({
+        chatHistory: [...prevState.chatHistory, msg],
+      }))
+    });
+  }
+
   
   
 
   render() {
+    console.log(this.state.chatHistory)
+    const messages = this.state.chatHistory.map((msg, index) => (
+      <p key={index}>{msg.data}</p>
+    ))
+    console.log(messages)
+
     return (
       <div className="game">
         <main>
@@ -119,6 +136,9 @@ class Board extends React.Component {
                 aria-label="Reset board"
                 data-balloon-pos="right">
             <FontAwesomeIcon icon={ faRedo } />
+          </div>
+          <div className="ChatHistory">
+            {messages}
           </div>
           
         </aside>

@@ -4,58 +4,40 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
+
+	"github.com/elliottyoon/2048Racer/pkg/websocket"
 )
 
-var upgrader = websocket.Upgrader {
-	ReadBufferSize: 1024,
-	WriteBufferSize: 1024,
-	// change this later
-	CheckOrigin: func(r *http.Request) bool {return true},
-}
-
-// listen for new messages begin sent to our WebSocket endpoint
-func reader(conn *websocket.Conn) {
-	for {
-		// read message
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		fmt.Println(string(p))
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
-	}
-}
-
 // define WebSocket endpoint
-func serveWs(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Host)
-
-	// upgrade connection to WS connection
-	ws, err := upgrader.Upgrade(w, r, nil) 
+func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("WebSocket endpoint hit")
+	conn, err := websocket.Upgrade(w, r)
 	if err != nil {
-		log.Println(err)
+		fmt.Fprintf(w, "%+v\n", err)
 	}
 
-	// listen indefinitely for new messages coming in via connection
-	reader(ws)
+	client := &websocket.Client{
+		Conn: conn,
+		Pool: pool,
+	}
+
+	pool.Register <- client
+	client.Read()
 }
 
 func setupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Simple Server")
+	pool := websocket.NewPool()
+	go pool.Start()
+
+	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(pool, w, r)
 	})
-	mux.HandleFunc("/ws", serveWs)
 }
 
 func main() {
+	fmt.Println("2048 Racing App v0.01")
+
 	mux := http.NewServeMux()
 	setupRoutes(mux)
-	
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
