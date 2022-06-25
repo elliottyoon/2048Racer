@@ -26,4 +26,8 @@ let sendMsg = msg => {
     socket.send(msg);
 };
 
-export { connect, sendMsg };
+let startServerTime = () => {
+  socket.send("Start Time");
+}
+
+export { connect, sendMsg, startServerTime };

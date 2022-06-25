@@ -7,7 +7,7 @@ import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
 import Square from './Square.js';
 
-import { connect, sendMsg } from "../api"
+import { connect, sendMsg, startServerTime } from "../api"
 
 class Board extends React.Component {
   constructor(props) {
@@ -30,14 +30,16 @@ class Board extends React.Component {
     this.resetBoard = this.resetBoard.bind(this);
     this.updateHighestTile = this.updateHighestTile.bind(this);
 
+    this.startTimeForAll = this.startTimeForAll.bind(this);
     
-    this.timeSetter = null;
+    this.timeStarter = null;
+    this.timeStopper = null;
     this.boardSetter = null;
 
   }
 
   send() {
-    console.log("hello");
+    console.log("Sending message...");
     sendMsg(`Highest tile: ${this.state.highestTile}.`);
   }
 
@@ -46,15 +48,20 @@ class Board extends React.Component {
   }
 
   onTimerMount(setter) {
-    this.timeSetter = setter;
+    this.timeStopper = setter[0];
+    this.timeStarter = setter[1];
   }
   onBoardMount(setter) {
     console.log(setter);
     this.boardSetter = setter;
   }
 
+  startTimeForAll() {
+    startServerTime();
+  }
+
   callStopTime() {
-    this.timeSetter();
+    this.timeStopper();
   }
   resetBoard() {
     this.boardSetter();
@@ -63,7 +70,7 @@ class Board extends React.Component {
   updateHighestTile(update) {
     // winning condition
     if (update == 8) {
-      sendMsg('I won');
+      sendMsg('User Won');
     }
 
     this.setState({
@@ -73,10 +80,25 @@ class Board extends React.Component {
 
   componentDidMount() {
     connect((msg) => {
-      console.log("New Message")
-      this.setState(prevState => ({
-        chatHistory: [...prevState.chatHistory, msg],
-      }))
+      // handles different messages
+      const messageBody = JSON.parse(msg.data).body
+
+      if (messageBody.includes("StartTime")) {
+        this.timeStarter(Number(messageBody.slice(11)))
+        this.resetBoard();
+      } else {
+        if (messageBody.includes("won")) {
+          this.callStopTime();
+          console.log(messageBody);
+        } else {
+          console.log(messageBody);
+        }
+
+
+        this.setState(prevState => ({
+          chatHistory: [...prevState.chatHistory, messageBody],
+        }))
+      }
     });
   }
 
@@ -86,7 +108,7 @@ class Board extends React.Component {
   render() {
     console.log(this.state.chatHistory)
     const messages = this.state.chatHistory.map((msg, index) => (
-      <p key={index}>{msg.data}</p>
+      <p key={index}>{msg}</p>
     ))
     console.log(messages)
 
@@ -127,9 +149,9 @@ class Board extends React.Component {
                          updateHighestTile={this.updateHighestTile}/>
         </main> 
         <aside>
-          <Timer timeStart={this.state.timeStart} onMount={this.onTimerMount}/>
+          <Timer onMount={this.onTimerMount}/>
           <p>Highest tile: {this.state.highestTile}</p>
-          <button onClick={this.send}> Say hi to server </button>
+          <button onClick={this.startTimeForAll}> Start Racing!</button>
           <div className={"reset-board"}
                 tabIndex={"0"}
                 onClick={this.resetBoard}
