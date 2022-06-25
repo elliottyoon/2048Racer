@@ -3,6 +3,8 @@ body {
   margin: 20px;
   background-color: #1e1e1e;
   color: white;
+  min-width: 720px;
+  min-height: 670px;
 }
 
 ol, ul {
@@ -30,6 +32,13 @@ aside {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.bottom {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 }
 
 h1.title {
@@ -166,6 +175,11 @@ h1.title {
 
 .reset-board:hover {
   color: white;
+}
+
+.ChatHistory {
+  margin-top: 50px;
+
 }
 
 

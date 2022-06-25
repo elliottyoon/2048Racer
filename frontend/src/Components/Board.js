@@ -113,57 +113,62 @@ class Board extends React.Component {
     console.log(messages)
 
     return (
-      <div className="game">
-        <main>
-          <div className="heading">
-            <h1 className="title">4096</h1>
-          </div>
-          <div className="board-container">
-              <div className="board-row">
-                {this.renderSquare(0)}
-                {this.renderSquare(1)}
-                {this.renderSquare(2)}
-                {this.renderSquare(3)}
-              </div>
-              <div className="board-row">
-                {this.renderSquare(4)}
-                {this.renderSquare(5)}
-                {this.renderSquare(6)}
-                {this.renderSquare(7)}
-              </div>
-              <div className="board-row">
-                {this.renderSquare(8)}
-                {this.renderSquare(9)}
-                {this.renderSquare(10)}
-                {this.renderSquare(11)}          
-              </div>
-              <div className="board-row">
-                {this.renderSquare(12)}
-                {this.renderSquare(13)}
-                {this.renderSquare(14)}
-                {this.renderSquare(15)}          
-              </div>
-          </div>
-          <TileContainer stopTime={this.callStopTime} 
-                         onMount={this.onBoardMount}
-                         updateHighestTile={this.updateHighestTile}/>
-        </main> 
-        <aside>
-          <Timer onMount={this.onTimerMount}/>
-          <p>Highest tile: {this.state.highestTile}</p>
-          <button onClick={this.startTimeForAll}> Start Racing!</button>
-          <div className={"reset-board"}
-                tabIndex={"0"}
-                onClick={this.resetBoard}
-                aria-label="Reset board"
-                data-balloon-pos="right">
-            <FontAwesomeIcon icon={ faRedo } />
-          </div>
-          <div className="ChatHistory">
-            {messages}
-          </div>
+      <div className="window">
+        <div className="game">
+          <main>
+            <div className="heading">
+              <h1 className="title">4096</h1>
+            </div>
+            <div className="board-container">
+                <div className="board-row">
+                  {this.renderSquare(0)}
+                  {this.renderSquare(1)}
+                  {this.renderSquare(2)}
+                  {this.renderSquare(3)}
+                </div>
+                <div className="board-row">
+                  {this.renderSquare(4)}
+                  {this.renderSquare(5)}
+                  {this.renderSquare(6)}
+                  {this.renderSquare(7)}
+                </div>
+                <div className="board-row">
+                  {this.renderSquare(8)}
+                  {this.renderSquare(9)}
+                  {this.renderSquare(10)}
+                  {this.renderSquare(11)}          
+                </div>
+                <div className="board-row">
+                  {this.renderSquare(12)}
+                  {this.renderSquare(13)}
+                  {this.renderSquare(14)}
+                  {this.renderSquare(15)}          
+                </div>
+            </div>
+            <TileContainer stopTime={this.callStopTime} 
+                          onMount={this.onBoardMount}
+                          updateHighestTile={this.updateHighestTile}/>
+          </main> 
+          <aside>
+            <Timer onMount={this.onTimerMount}/>
+            <p>Highest tile: {this.state.highestTile}</p>
+            <button onClick={this.startTimeForAll}> Start Racing!</button>
+            <div className="ChatHistory">
+              {messages}
+            </div>
+            
+          </aside>
+        </div>
+        <div className="bottom">
           
-        </aside>
+            <div className={"reset-board"}
+                  tabIndex={"0"}
+                  onClick={this.resetBoard}
+                  aria-label="Reset board"
+                  data-balloon-pos="right">
+              <FontAwesomeIcon icon={ faRedo } />
+            </div>
+        </div>
       </div>
     );
   }
