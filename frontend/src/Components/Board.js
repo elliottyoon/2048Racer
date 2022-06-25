@@ -165,7 +165,7 @@ class Board extends React.Component {
                   tabIndex={"0"}
                   onClick={this.resetBoard}
                   aria-label="Reset board"
-                  data-balloon-pos="right">
+                  data-balloon-pos="down">
               <FontAwesomeIcon icon={ faRedo } />
             </div>
         </div>
