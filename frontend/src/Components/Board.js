@@ -5,6 +5,7 @@ import { faRedo, faTrophy, faFlagCheckered } from '@fortawesome/free-solid-svg-i
 
 import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
+import Modal from './Modal.js';
 import Square from './Square.js';
 
 import { connect, sendMsg, startServerTime } from "../api"
@@ -19,6 +20,7 @@ class Board extends React.Component {
       timeStopped: false,
       highestTile: 0,
       chatHistory: [],
+      modal: null,
     }
 
     this.colors = {
@@ -61,6 +63,18 @@ class Board extends React.Component {
     return <Square />;
   }
 
+  renderModal(type) {
+    if (!type) {
+      return;
+    }
+    if (type == "win") {
+      return <Modal value="Cowabunga you won!" id="game-won"/>;
+    }
+    if (type = "lose") {
+      return <Modal value="Drip drop you flop" id="game-lost"/>;
+    }
+  }
+
   onTimerMount(setter) {
     this.timeStopper = setter[0];
     this.timeStarter = setter[1];
@@ -71,6 +85,9 @@ class Board extends React.Component {
   }
 
   startTimeForAll() {
+    this.setState({
+      modal: null,
+    })
     startServerTime();
   }
 
@@ -79,27 +96,30 @@ class Board extends React.Component {
   }
   resetBoard() {
     this.boardSetter();
+    this.setState({
+      modal: null,
+    })
   }
   
   updateHighestTile(update) {
+    let stateChanges = {
+      highestTile: update,
+    };
+
     // winning condition
     if (update == 2048) {
       sendMsg('User Won');
+      stateChanges["modal"] = "win";
     }
 
-    this.setState({
-      highestTile: update,
-    });
+    this.setState(stateChanges);
   }
 
-  showWonModal() {
-
-  }
 
   componentDidMount() {
     connect((msg) => {
       // handles different messages
-      let messageBody = JSON.parse(msg.data).body
+      let messageBody = JSON.parse(msg.data).body;
 
       if (messageBody.includes("StartTime")) {
         this.timeStarter(Number(messageBody.slice(11)))
@@ -108,6 +128,12 @@ class Board extends React.Component {
       }
       if (messageBody.includes("won")) {
         this.callStopTime();
+        // and you didn't win
+        if (!this.state.modal) {
+          this.setState({
+            modal: "lose",
+          })
+        }
         console.log(messageBody);
       } else {
         console.log(messageBody);
@@ -140,13 +166,7 @@ class Board extends React.Component {
       <div className="board">
         <div className="game">
           <main>
-            <div className={["game-message", "game-lost"].join(" ")}>
-              <p>Drip drop you need to stop.</p>
-            </div>
-            <div className={["game-message", "game-won"].join(" ")}>
-              <p>Cowabunga you won!</p>
-            </div>
-
+            { this.renderModal(this.state.modal) }
             <div className="board-container">
                 <div className="board-row">
                   {this.renderSquare(0)}
@@ -198,7 +218,6 @@ class Board extends React.Component {
           </aside>
         </div>
         <div className="bottom">
-          
             <div className={"reset-board"}
                   tabIndex={"0"}
                   onClick={this.resetBoard}

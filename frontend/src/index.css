@@ -75,11 +75,11 @@ aside button {
   border-color: rgba(223,225,229,0); 
   box-shadow: 0 1px 6px 0 #171717;
   height: 40px;
+  width: 150px;
 
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
   font-size: 20px;
-  padding: 0 20px;
   margin: 20px 0 20px 0;
 }
 
@@ -202,18 +202,17 @@ h1.title {
   text-align: center;
 }
 
-.game-won {
+#game-won {
   background: rgba(237, 194, 46, 0.5);
-  visibility: hidden;
+  color: #f9f6f2;
 }
 
-.game-lost {
+#game-lost {
   background: rgba(238, 228, 218, 0.73); 
-  visibility: hidden;
+  color: #282c34;
 }
 
 .game-message {
-  color: #f9f6f2;
   display: flex;
   align-items: center;
   justify-content: center;
