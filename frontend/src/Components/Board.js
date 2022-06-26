@@ -92,6 +92,10 @@ class Board extends React.Component {
     });
   }
 
+  showWonModal() {
+
+  }
+
   componentDidMount() {
     connect((msg) => {
       // handles different messages
@@ -136,6 +140,13 @@ class Board extends React.Component {
       <div className="board">
         <div className="game">
           <main>
+            <div className={["game-message", "game-lost"].join(" ")}>
+              <p>Drip drop you need to stop.</p>
+            </div>
+            <div className={["game-message", "game-won"].join(" ")}>
+              <p>Cowabunga you won!</p>
+            </div>
+
             <div className="board-container">
                 <div className="board-row">
                   {this.renderSquare(0)}
