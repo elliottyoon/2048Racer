@@ -10,7 +10,9 @@ class Game extends React.Component {
 
   render() {
     return (
-      <Board />
+      <div className="window">
+        <Board />
+      </div>
     );
   }
 }

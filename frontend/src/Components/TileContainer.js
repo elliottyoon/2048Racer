@@ -11,6 +11,21 @@ import {findFurthestOpenSpace, generateRandomTile} from '../helpers.js'
 
     * endgame functionality  
 
+    * when you win, add div above grid and tile containers (game-message game-won)
+        background: rgba(237, 194, 46, 0.5);
+        color: #f9f6f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+        animation: fade-in 800ms ease 1200ms;
+
 */
 
 class TileContainer extends React.Component {
@@ -349,7 +364,7 @@ class TileContainer extends React.Component {
         const y = 15 + j * 121.25;    
 
         // coloring
-        let background = '#abb2bf';
+        let background = this.props.colors[val];
         let color = '#282c34';
         let fontSize = '60px';
         let styles = {};
@@ -360,24 +375,6 @@ class TileContainer extends React.Component {
 
 
         if (val < 128) {
-            switch (val) {
-                case 4: 
-                    background = '#eee1c9';
-                    break;
-                case 8:
-                    background = '#f3b27a';
-                    break;
-                case 16:
-                    background = '#f69664';
-                    break;
-                case 32:
-                    background = '#f77c5f';
-                    break;
-                case 64: //todo
-                    background = '#f75f3b';
-                    break;
-            }
-
             styles = {
                 top: x + 'px',
                 left: y + 'px',
@@ -403,27 +400,21 @@ class TileContainer extends React.Component {
             let boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
             switch (val) {
                 case 128:
-                    background = '#edd073';
                     fontSize = '45px';
                     break;
                 case 256:
-                    background = '#edcc62';
                     fontSize = '45px';
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 32%), inset 0 0 0 1px rgb(255 255 255 / 19%)';
                     break;
                 case 512:
-                    background = '#edc950';
                     fontSize = '45px';
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 40%), inset 0 0 0 1px rgb(255 255 255 / 24%)';
                     break;
                 case 1024:
-                    background = '#edc53f';
                     fontSize = '35px';
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
                     break;
                 case 2048:
-                    
-                    background = '#17a589';
                     fontSize = '35px';
                     // boxShadow = ...
                     break;

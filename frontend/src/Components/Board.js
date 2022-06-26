@@ -1,7 +1,7 @@
 import React from 'react';
 import 'balloon-css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faRedo, faTrophy, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
 
 import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
@@ -19,6 +19,20 @@ class Board extends React.Component {
       timeStopped: false,
       highestTile: 0,
       chatHistory: [],
+    }
+
+    this.colors = {
+      2: '#abb2bf',
+      4: '#eee1c9',
+      8: '#f3b27a',
+      16: '#f69664',
+      32: '#f77c5f',
+      64: '#f75f3b',
+      128: '#edd073',
+      256: '#edcc62',
+      512: '#edc950',
+      1024: '#edc53f',
+      2048: '#17a589'
     }
 
     this.send = this.send.bind(this);
@@ -69,7 +83,7 @@ class Board extends React.Component {
   
   updateHighestTile(update) {
     // winning condition
-    if (update == 8) {
+    if (update == 2048) {
       sendMsg('User Won');
     }
 
@@ -81,31 +95,37 @@ class Board extends React.Component {
   componentDidMount() {
     connect((msg) => {
       // handles different messages
-      const messageBody = JSON.parse(msg.data).body
+      let messageBody = JSON.parse(msg.data).body
 
       if (messageBody.includes("StartTime")) {
         this.timeStarter(Number(messageBody.slice(11)))
         this.resetBoard();
-      } else {
-        if (messageBody.includes("won")) {
-          this.callStopTime();
-          console.log(messageBody);
-        } else {
-          console.log(messageBody);
-        }
-
-
-        this.setState(prevState => ({
-          chatHistory: [...prevState.chatHistory, messageBody],
-        }))
+        messageBody = "Starting race..."
       }
-    });
+      if (messageBody.includes("won")) {
+        this.callStopTime();
+        console.log(messageBody);
+      } else {
+        console.log(messageBody);
+      }
+
+
+      this.setState(prevState => ({
+        chatHistory: [...prevState.chatHistory, messageBody],
+      }))
+    }
+    );
   }
 
   
   
 
   render() {
+    let divColor = 'grey';
+    if (this.state.highestTile > 64) {
+      divColor = this.colors[this.state.highestTile];
+    }
+
     console.log(this.state.chatHistory)
     const messages = this.state.chatHistory.map((msg, index) => (
       <p key={index}>{msg}</p>
@@ -113,12 +133,9 @@ class Board extends React.Component {
     console.log(messages)
 
     return (
-      <div className="window">
+      <div className="board">
         <div className="game">
           <main>
-            <div className="heading">
-              <h1 className="title">4096</h1>
-            </div>
             <div className="board-container">
                 <div className="board-row">
                   {this.renderSquare(0)}
@@ -145,14 +162,24 @@ class Board extends React.Component {
                   {this.renderSquare(15)}          
                 </div>
             </div>
-            <TileContainer stopTime={this.callStopTime} 
-                          onMount={this.onBoardMount}
-                          updateHighestTile={this.updateHighestTile}/>
+            <TileContainer 
+                colors={this.colors}
+                stopTime={this.callStopTime} 
+                onMount={this.onBoardMount}
+                updateHighestTile={this.updateHighestTile}/>
           </main> 
           <aside>
+            <div className="heading">
+              <h1 className="title">4096</h1>
+            </div>
             <Timer onMount={this.onTimerMount}/>
-            <p>Highest tile: {this.state.highestTile}</p>
-            <button onClick={this.startTimeForAll}> Start Racing!</button>
+            <div id="highest-tile" style={{color: divColor}}>
+              <FontAwesomeIcon icon={ faTrophy } className="inlineIcon"/>
+              {this.state.highestTile}
+            </div>
+            <button onClick={this.startTimeForAll}>
+              Start Race
+            </button>
             <div className="ChatHistory">
               {messages}
             </div>

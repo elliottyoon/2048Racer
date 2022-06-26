@@ -1,4 +1,7 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
+
 
 class Timer extends React.Component {
   constructor(props) {
@@ -48,7 +51,10 @@ class Timer extends React.Component {
 
   render() {
     return (
-      <div className="status">Time Elapsed: {this.state.minutesElapsed}:{this.state.secondsElapsed}.{this.state.msElapsed}</div>
+      <div className="status">
+        <FontAwesomeIcon icon={ faClock } className="inlineIcon" /> 
+        {this.state.minutesElapsed}:{this.state.secondsElapsed}.{this.state.msElapsed}
+      </div>
     );
   }
 }
