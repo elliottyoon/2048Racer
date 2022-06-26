@@ -11,21 +11,6 @@ import {findFurthestOpenSpace, generateRandomTile} from '../helpers.js'
 
     * endgame functionality  
 
-    * when you win, add div above grid and tile containers (game-message game-won)
-        background: rgba(237, 194, 46, 0.5);
-        color: #f9f6f2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        z-index: 100;
-        animation: fade-in 800ms ease 1200ms;
-
 */
 
 class TileContainer extends React.Component {
