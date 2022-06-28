@@ -1,3 +1,18 @@
+
+
+:root {
+  --title-size: 80px;
+  --aside-font-size: 23px;
+  --aside-button-font-size: 20px;
+
+  --tile-size: 106.25px;
+  --tile-margin: 15px;
+  --tile-font-size: 60px;
+  --tile-font-size-3digit: 45px;
+  --tile-font-size-4digit: 35px;
+  --board-length: calc(var(--tile-margin) + 4 * (var(--tile-margin) + var(--tile-size)))
+}
+
 body {
   font: 18px "Clear Sans", "Helvetica Neue", Arial, sans-serif; 
   background-color: #1e1e1e;
@@ -44,11 +59,6 @@ body {
 .top {
   height: 100px;
 }
-.board {
-  /* margin-top: 100px; */
-  display: grid;
-  grid-template-rows: 500px auto;
-}
 
 .bottom {
   grid-row-start: 2;
@@ -62,7 +72,7 @@ body {
   grid-row-start: 1;
   grid-row-end: 2;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: center;
 }
 
@@ -72,15 +82,17 @@ body {
 
 
 main {
-  width: 500px;
-  height: 500px;
+  border: 1px solid green;
+  position: relative;
+  width: var(--board-length);
+  height: var(--board-length);
 }
 
 aside {
   box-sizing: border-box;
   margin: 0 50px 0 0;
   border-radius: 10px;
-  height: 500px;
+  height: var(--board-length);
   width: 20%;
   padding: 10px;
 
@@ -97,7 +109,7 @@ aside {
 
 aside > * {
   margin-bottom: 10px;
-  font-size: 23px;
+  font-size: var(--aside-font-size);
   color: grey;
 } 
 
@@ -112,7 +124,7 @@ aside button {
 
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
-  font-size: 20px;
+  font-size: var(--aside-button-font-size);
   margin: 20px 0 20px 0;
 }
 
@@ -125,7 +137,7 @@ aside button:hover {
 
 
 h1.title {
-    font-size: 80px;
+    font-size: var(--title-size);
     font-weight: bold;
     margin: 0;
     display: block;
@@ -135,27 +147,6 @@ h1.title {
 
 /*                             Board Container                                           */
 
-@media screen and (max-width: 720px) {
-  /* ********* this is super unfinished, only works for desktop atm */
-    body {
-      background-color: red;
-    }
-
-    .game {
-      border: 1px solid green;
-    }
-
-    main {
-      margin-left: 0;
-      position: relative;
-      border: 1px solid green;
-    }
-
-    aside {
-      position: absolute;
-      bottom: 0;
-    }
-}
 
 
 
@@ -163,21 +154,20 @@ h1.title {
     z-index: 1;
     position: absolute;
     border-radius: 6px;
-    padding: 15px 0px 0px 15px;
+    padding: var(--tile-margin) 0px 0px var(--tile-margin);
     background: #2d2d30;
     border-color: rgba(223,225,229,0); 
     box-shadow: 0 1px 6px 0 #171717;
 
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     font-size: 18px;
-
-    width: 500px;
-    height: 500px;
+    width: var(--board-length);
+    height: var(--board-length);
     box-sizing: border-box;
 }
 
 .board-row {
-    margin-bottom: 15px;
+    margin-bottom: var(--tile-margin);
 }
 
 .board-row:after {
@@ -189,13 +179,14 @@ h1.title {
 
 
 .square {
-    width: 104.25px;
-    height: 104.25px;
-    margin-right: 15px;
-    float: left;
-    border-radius: 3px;
-    border: 1px #2d2d30 solid;
-    background:#3e3e42;
+  box-sizing: border-box;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  margin-right: var(--tile-margin);
+  float: left;
+  border-radius: 3px;
+  border: 1px #2d2d30 solid;
+  background:#3e3e42;
 }
 
 .square:focus {
@@ -210,21 +201,24 @@ h1.title {
 .tile-container {
   z-index: 2;
   position: relative;
-  /* position: absolute; */
-  padding: 15px 0px 0px 15px;
+  height: var(--board-length);
+  padding: var(--tile-margin) 0px 0px var(--tile-margin);
+  box-sizing: border-box;
 }
 
+
+
 .tile {
-  width: 106.25px;
-  height: 106.25px;
+  width: var(--tile-size);
+  height: var(--tile-size);
   position: absolute;
-  margin-right: 15px;
+  margin-right: var(--tile-margin);
   float: left;
   border-radius: 3px;
   border: 1px #2d2d30 solid;
 
 
-  font-size: 60px;
+  font-size: var(--tile-font-size);
   font-weight: bold;
   margin: 0;
   display: flex;
@@ -252,10 +246,10 @@ h1.title {
   text-align: center;
   position: absolute;
 
-  width: 500px;
-  height: 500px;
+  width: var(--board-length);
+  height: var(--board-length);
   border-radius: 3px;
-  font-size: 60px;
+  font-size: var(--tile-font-size);
   font-weight: bold;
   z-index: 100;
   animation: fade-in 800ms ease 1200ms;
@@ -263,6 +257,13 @@ h1.title {
 
 .inlineIcon {
   margin-right: 15px;
+}
+
+.iconContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 63px;
 }
 
 .reset-board {
@@ -300,4 +301,48 @@ h1.title {
 
 .warning {
   color: #f47174;
+}
+
+
+@media screen and (max-width: 720px) {
+  /* ********* this is super unfinished, only works for desktop atm */
+
+    :root {
+      --title-size: 50px; 
+      --aside-font-size: 18px;
+      --aside-button-size: 13px;
+
+      --tile-size: 57.5px;
+      --tile-margin: 10px;
+      --tile-font-size: 35px;
+      --tile-font-size-3digit: 25px;
+      --tile-font-size-4digit: 20px;
+      --board-length: calc(var(--tile-margin) + 4 * (var(--tile-margin) + var(--tile-size)))
+    }
+
+    .game {
+      flex-direction: column;
+      justify-content: center;
+      width: 90vw;  
+    
+    }
+
+    aside {
+      border: 1px solid red;
+      height: 130px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: flex-start;
+      align-items: center;
+      width: var(--board-length);
+    }
+
+
+    .iconContainer {
+      order: 1;
+      margin: -35px 0 0 20px;
+      display:inline-block;
+      height: 5px;
+    }
 }

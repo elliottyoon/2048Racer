@@ -3,7 +3,10 @@ import 'balloon-css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRedo, faTrophy } from '@fortawesome/free-solid-svg-icons';
 
+import BoardContainer from './BoardContainer.js'
 import TileContainer from './TileContainer.js';
+
+import ChatHistory from './ChatHistory';
 import Timer from './Timer.js';
 import Modal from './Modal.js';
 import Square from './Square.js';
@@ -163,66 +166,35 @@ class Board extends React.Component {
       divColor = this.colors[this.state.highestTile];
     }
 
-    console.log(this.state.chatHistory)
-    const messages = this.state.chatHistory.map((msg, index) => (
-      <p key={index}>{msg}</p>
-    ))
-    console.log(messages)
-
+   
     return (
       <div className="board">
         <div className="game">
+          <aside>
+            <div className="heading">
+              <h1 className="title">4096</h1>
+            </div>
+            <div className="iconContainer">
+              <Timer onMount={this.onTimerMount}/>
+              <div id="highest-tile" style={{color: divColor}}>
+                <FontAwesomeIcon icon={ faTrophy } className="inlineIcon"/>
+                {this.state.highestTile}
+              </div>
+            </div>
+            <button onClick={this.startTimeForAll}>
+              Start Race
+            </button>
+            <ChatHistory chatHistory={this.state.chatHistory} />
+          </aside>
           <main>
             { this.renderModal(this.state.modal) }
-            <div className="board-container">
-                <div className="board-row">
-                  {this.renderSquare(0)}
-                  {this.renderSquare(1)}
-                  {this.renderSquare(2)}
-                  {this.renderSquare(3)}
-                </div>
-                <div className="board-row">
-                  {this.renderSquare(4)}
-                  {this.renderSquare(5)}
-                  {this.renderSquare(6)}
-                  {this.renderSquare(7)}
-                </div>
-                <div className="board-row">
-                  {this.renderSquare(8)}
-                  {this.renderSquare(9)}
-                  {this.renderSquare(10)}
-                  {this.renderSquare(11)}          
-                </div>
-                <div className="board-row">
-                  {this.renderSquare(12)}
-                  {this.renderSquare(13)}
-                  {this.renderSquare(14)}
-                  {this.renderSquare(15)}          
-                </div>
-            </div>
+            <BoardContainer renderSquare={this.renderSquare}/>
             <TileContainer 
                 colors={this.colors}
                 stopTime={this.callStopTime} 
                 onMount={this.onBoardMount}
                 updateHighestTile={this.updateHighestTile}/>
           </main> 
-          <aside>
-            <div className="heading">
-              <h1 className="title">4096</h1>
-            </div>
-            <Timer onMount={this.onTimerMount}/>
-            <div id="highest-tile" style={{color: divColor}}>
-              <FontAwesomeIcon icon={ faTrophy } className="inlineIcon"/>
-              {this.state.highestTile}
-            </div>
-            <button onClick={this.startTimeForAll}>
-              Start Race
-            </button>
-            <div className="ChatHistory">
-              {messages}
-            </div>
-            
-          </aside>
         </div>
         <div className="bottom">
             <div className={"reset-board"}

@@ -26,6 +26,7 @@ class TileContainer extends React.Component {
                 ['', '', '', ''],
                 ['', '', '', ''],
             ],
+            tileFontSize: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size'))
         }
 
         this.highlightedTile = null;
@@ -40,9 +41,6 @@ class TileContainer extends React.Component {
         this.slideDown = this.slideDown.bind(this);
         this.slideRight = this.slideRight.bind(this);
         this.slideLeft = this.slideLeft.bind(this);
-
-        this.mergeTile = this.mergeTile.bind(this);
-        this.slideTile = this.slideTile.bind(this);
  
         this.slideHelper = this.slideHelper.bind(this);
         this.transpose = this.transpose.bind(this);
@@ -62,6 +60,19 @@ class TileContainer extends React.Component {
         this.props.updateHighestTile(this.highestTile);
 
         /********************************************* */
+
+        
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize', () => {
+            if (this.state.tileFontSize != parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-size'))) {
+                this.setState({
+                    // tileFontSize acts as a canary; can be any of the css variables
+                    tileFontSize: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-size'))
+                })
+            }
+        });
     }
 
     componentDidUpdate() {
@@ -228,23 +239,6 @@ class TileContainer extends React.Component {
                             
 
 
-    async slideTile(tile, dx, dy) {
-        // negative dx -> left
-        // negative dy -> up
-        tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
-        //await new Promise(r => setTimeout(r, 200));
-        return tile.textContent;
-    }
-
-    async mergeTile(tile, dx, dy) {
-        let val = Number(tile.textContent) * 2;
-        tile.style.transform = `translate(${dx * 121.25}px, ${dy * 121.25}px)`;
-        //await new Promise(r => setTimeout(r, 200));
-        // double value 
-        //tile.textContent = val;
-        return val;
-    }
-    
     slideHelper(cols) {
         let changes = []
         // for each column
@@ -344,14 +338,18 @@ class TileContainer extends React.Component {
     }
 
     renderTile(i, j, val) {
+        
+        
         // row i, column j
-        const x = 15 + i * 121.25; // tile size = (106.25 + 15) = 121.25px
-        const y = 15 + j * 121.25;    
+        const x = this.tileMargin + i * this.tileOffset; // tile size = (106.25 + 15) = 121.25px
+        const y = this.tileMargin + j * this.tileOffset;   
+
+        console.log("%d: %f", i, x);
 
         // coloring
         let background = this.props.colors[val];
         let color = '#282c34';
-        let fontSize = '60px';
+        let fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size');
         let styles = {};
 
         if (val > 4) {
@@ -363,7 +361,6 @@ class TileContainer extends React.Component {
             styles = {
                 top: x + 'px',
                 left: y + 'px',
-                transform: 'translate(0)',
                 background: background,
                 color: color,
                 fontSize: fontSize,
@@ -385,22 +382,22 @@ class TileContainer extends React.Component {
             let boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
             switch (val) {
                 case 128:
-                    fontSize = '45px';
+                    fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
                     break;
                 case 256:
-                    fontSize = '45px';
+                    fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 32%), inset 0 0 0 1px rgb(255 255 255 / 19%)';
                     break;
                 case 512:
-                    fontSize = '45px';
+                    fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 40%), inset 0 0 0 1px rgb(255 255 255 / 24%)';
                     break;
                 case 1024:
-                    fontSize = '35px';
+                    fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-4digit');
                     boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
                     break;
                 case 2048:
-                    fontSize = '35px';
+                    fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
                     // boxShadow = ...
                     break;
             }
