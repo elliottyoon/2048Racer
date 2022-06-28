@@ -18,7 +18,7 @@ body {
 .footer {
   width: 80vw;
   height: 50px;
-  bottom: 0;
+  margin-bottom: 10px;
 }
 .footer ul {
   list-style: none;
