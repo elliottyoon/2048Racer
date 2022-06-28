@@ -1,17 +1,7 @@
 
 
-:root {
-  --title-size: 80px;
-  --aside-font-size: 23px;
-  --aside-button-font-size: 20px;
 
-  --tile-size: 106.25px;
-  --tile-margin: 15px;
-  --tile-font-size: 60px;
-  --tile-font-size-3digit: 45px;
-  --tile-font-size-4digit: 35px;
-  --board-length: calc(var(--tile-margin) + 4 * (var(--tile-margin) + var(--tile-size)))
-}
+
 
 body {
   font: 18px "Clear Sans", "Helvetica Neue", Arial, sans-serif; 
@@ -66,6 +56,11 @@ body {
   display: flex;
   justify-content: center;
   flex-direction: row;
+}
+
+.bottom button {
+  background-color: transparent;
+  border: none;
 }
 
 .game {
@@ -302,8 +297,21 @@ h1.title {
   color: #f47174;
 }
 
+:root {
+  --title-size: 80px;
+  --aside-font-size: 23px;
+  --aside-button-font-size: 20px;
 
-@media screen and (max-width: 720px) {
+  --tile-size: 106.25px;
+  --tile-margin: 15px;
+  --tile-font-size: 60px;
+  --tile-font-size-3digit: 45px;
+  --tile-font-size-4digit: 35px;
+  --board-length: calc(var(--tile-margin) + 4 * (var(--tile-margin) + var(--tile-size)))
+}
+
+
+@media screen and (max-width: 800px) {
   /* ********* this is super unfinished, only works for desktop atm */
 
     :root {
@@ -319,11 +327,25 @@ h1.title {
       --board-length: calc(var(--tile-margin) + 4 * (var(--tile-margin) + var(--tile-size)))
     }
 
+    .board {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: var(--board-length);
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .bottom {
+      width: var(--board-length);
+    }
+
+
     .game {
       flex-direction: column;
       justify-content: center;
-      width: 90vw;  
-    
+
     }
 
     aside {
@@ -335,6 +357,7 @@ h1.title {
       align-items: center;
       width: var(--board-length);
     }
+
 
 
     .iconContainer {

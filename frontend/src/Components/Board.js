@@ -195,17 +195,18 @@ class Board extends React.Component {
                 onMount={this.onBoardMount}
                 updateHighestTile={this.updateHighestTile}/>
           </main> 
-        </div>
-        <div className="bottom">
-            <div className={"reset-board"}
+          <div className="bottom">
+            <button className={"reset-board"}
                   tabIndex={"0"}
                   onClick={this.resetBoard}
                   aria-label="Reset board"
                   data-balloon-pos="down">
-              <FontAwesomeIcon icon={ faRedo } />
-            </div>
+              <FontAwesomeIcon icon={ faRedo } size="lg"/>
+            </button>
+          </div>
         </div>
       </div>
+        
     );
   }
 }

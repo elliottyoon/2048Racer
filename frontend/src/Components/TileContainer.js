@@ -338,11 +338,13 @@ class TileContainer extends React.Component {
     }
 
     renderTile(i, j, val) {
-        
-        
+        const tileMargin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-margin'));
+        const tileLength = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-size')) 
+        const tileOffset = tileMargin + tileLength;
+
         // row i, column j
-        const x = this.tileMargin + i * this.tileOffset; // tile size = (106.25 + 15) = 121.25px
-        const y = this.tileMargin + j * this.tileOffset;   
+        const x = tileMargin + i * tileOffset; // tile size = (106.25 + 15) = 121.25px
+        const y = tileMargin + j * tileOffset;   
 
         console.log("%d: %f", i, x);
 
