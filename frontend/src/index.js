@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestionCircle, faLock, faCode } from '@fortawesome/free-solid-svg-icons';
+
 import './index.css'
+
 import Board from './Components/Board.js'
 import PrivacyPolicy from './Components/PrivacyPolicy';
 import Help from './Components/Help';
@@ -43,9 +48,17 @@ root.render(
 function Footer() {
   return <div className="footer">
             <ul>
-              <li><Link to="/how-to-play">Help</Link></li>
+              <li><Link to="/how-to-play">
+                <FontAwesomeIcon icon={ faQuestionCircle } className="footer-icon"/>Help</Link></li>
+              <li><Link to="/privacy-policy">
+                <FontAwesomeIcon icon={ faLock } className="footer-icon"/>Privacy
+                </Link>
+              </li>
               <li>
-                <Link to="/privacy-policy">Privacy</Link></li>
+                <a href="https://github.com/elliottyoon/2048Racer">
+                  <FontAwesomeIcon icon={ faCode } className="footer-icon"/>Github
+                </a>
+              </li>
             </ul>
           </div>;
 }

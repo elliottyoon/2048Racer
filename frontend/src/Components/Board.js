@@ -1,7 +1,7 @@
 import React from 'react';
 import 'balloon-css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRedo, faTrophy, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
+import { faRedo, faTrophy } from '@fortawesome/free-solid-svg-icons';
 
 import TileContainer from './TileContainer.js';
 import Timer from './Timer.js';
