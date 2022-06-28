@@ -1,20 +1,47 @@
 body {
-  font: 18px "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  margin: 20px;
+  font: 18px "Clear Sans", "Helvetica Neue", Arial, sans-serif; 
   background-color: #1e1e1e;
   color: white;
   min-width: 720px;
   min-height: 670px;
+  height: 100vh;
 }
 
-ol, ul {
-  padding-left: 30px;
-}
-
-.board {
-  margin-top: 100px;
+.window {
+  width: 100%;
   display: grid;
-  grid-template-rows: 500px 100px;
+  position: center;
+  grid-template-rows: auto 1fr auto;
+}
+
+.footer {
+  width: 80vw;
+  height: 50px;
+  bottom: 0;
+}
+.footer ul {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.footer ul li {
+  margin: 10px;
+  font-size: 13px;
+  color: grey;
+}
+.footer ul li > * {
+  text-decoration: none;
+  color: grey;
+}
+
+.top {
+  height: 100px;
+}
+.board {
+  /* margin-top: 100px; */
+  display: grid;
+  grid-template-rows: 500px auto;
 }
 
 .bottom {
@@ -256,4 +283,13 @@ h1.title {
 
 }
 
+/* ======== Privacy Policy ============= */
+.info {
+  margin: 100px 50px;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+}
 
+.warning {
+  color: #f47174;
+}

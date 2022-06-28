@@ -8,12 +8,19 @@ import Timer from './Timer.js';
 import Modal from './Modal.js';
 import Square from './Square.js';
 
-import { connect, sendMsg, startServerTime } from "../api"
+import { connect, sendMsg, startServerTime} from "../api"
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    connect();
+
+    try {
+      connect();
+      this.isConnected = true;
+    } catch(error) {
+      console.error(error);
+      this.isConnected = false;
+    }
 
     this.state = {
       timeStart: (new Date()).getTime(),
