@@ -82,7 +82,6 @@ body {
 
 
 main {
-  border: 1px solid green;
   position: relative;
   width: var(--board-length);
   height: var(--board-length);
@@ -328,7 +327,6 @@ h1.title {
     }
 
     aside {
-      border: 1px solid red;
       height: 130px;
       flex-direction: row;
       flex-wrap: wrap;
