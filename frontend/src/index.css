@@ -288,6 +288,10 @@ h1.title {
   Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
+.info b {
+  color: #7a82da;
+}
+
 .warning {
   color: #f47174;
 }
