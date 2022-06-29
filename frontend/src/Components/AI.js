@@ -4,6 +4,8 @@ import Square from './Square';
 import BoardContainer from './BoardContainer';
 import TileContainer from './TileContainer';
 
+import { transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable } from '../helpers.js';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRedo} from '@fortawesome/free-solid-svg-icons';
 
@@ -29,6 +31,9 @@ class AI extends React.Component {
                    both the left/right and up/down directions
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
                 3. Free tiles: penalty for having too few tiles
+
+    TODO: export the slideAction, insertRandomTile functions to helpers.js
+          create getter method for gameState
     */
 
     renderSquare(i) {
