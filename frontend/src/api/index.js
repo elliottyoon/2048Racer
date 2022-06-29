@@ -30,4 +30,8 @@ let startServerTime = () => {
   socket.send("Start Time");
 }
 
-export { connect, sendMsg, startServerTime };
+let getSocket = () => {
+  return socket;
+}
+
+export { connect, sendMsg, startServerTime, getSocket };

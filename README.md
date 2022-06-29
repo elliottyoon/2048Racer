@@ -4,8 +4,6 @@ Race your friends to the 2048 tile!
 
 ![](img/demo.png)
 
-![](img/demo_win.png)
-
 ---
 ### Deployment
 * The front-end React app is hosted via Vercel [here](https://2048-racer.vercel.app/)!

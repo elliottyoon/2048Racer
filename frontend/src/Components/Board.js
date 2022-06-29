@@ -11,13 +11,22 @@ import Timer from './Timer.js';
 import Modal from './Modal.js';
 import Square from './Square.js';
 
-import { connect, sendMsg, startServerTime} from "../api"
+import { connect, sendMsg, startServerTime, getSocket} from "../api"
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
 
-    this.isConnected = false;
+    /**
+     * 
+     * 
+     * 
+     * Change this later
+     * 
+     * 
+     * 
+     */
+    this.isConnected = true;
 
 
     this.state = {
@@ -142,8 +151,6 @@ class Board extends React.Component {
         chatHistory: [...prevState.chatHistory, messageBody],
       }))
     });
-
-    
 
     // change start button text based on singleplayer or multiplayer mode
     let btn = document.querySelector("#start-button");
