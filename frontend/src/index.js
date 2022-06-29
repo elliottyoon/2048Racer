@@ -6,7 +6,8 @@ import { faQuestionCircle, faLock, faCode } from '@fortawesome/free-solid-svg-ic
 
 import './index.css'
 
-import Board from './Components/Board.js'
+import AI from './Components/AI.js';
+import Board from './Components/Board.js';
 import PrivacyPolicy from './Components/PrivacyPolicy';
 import Help from './Components/Help';
 
@@ -39,6 +40,7 @@ root.render(
   <Router>
     <Routes>
       <Route path="/" element={<Game />} />
+      <Route path="/ai" element={<AI />}/>
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/how-to-play" element={<Help />} />
     </Routes>

@@ -271,13 +271,6 @@ class TileContainer extends React.Component {
                             // updates temporary game state
                             cols[col][index] = mergedValue;
                             cols[col][i] = '';
-                            // updates highest tile state if necessary
-                            if (parseInt(mergedValue) > this.state.highestTile) {
-                                this.state.highestTile = parseInt(mergedValue);
-                                if (mergedValue == 2048) {
-                                    this.props.stopTime();
-                                }
-                            }
 
                         } else {
                             changes.push({
@@ -346,10 +339,8 @@ class TileContainer extends React.Component {
         const x = tileMargin + i * tileOffset; // tile size = (106.25 + 15) = 121.25px
         const y = tileMargin + j * tileOffset;   
 
-        console.log("%d: %f", i, x);
-
         // coloring
-        let background = this.props.colors[val];
+        let background = getComputedStyle(document.documentElement).getPropertyValue(`--color-${val}x`);
         let color = '#282c34';
         let fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size');
         let styles = {};

@@ -28,20 +28,6 @@ class Board extends React.Component {
       modal: null,
     }
 
-    this.colors = {
-      2: '#abb2bf',
-      4: '#eee1c9',
-      8: '#f3b27a',
-      16: '#f69664',
-      32: '#f77c5f',
-      64: '#f75f3b',
-      128: '#edd073',
-      256: '#edcc62',
-      512: '#edc950',
-      1024: '#edc53f',
-      2048: '#17a589'
-    }
-
     this.send = this.send.bind(this);
 
     this.renderSquare = this.renderSquare.bind(this);
@@ -119,6 +105,7 @@ class Board extends React.Component {
 
     // winning condition
     if (update == 2048) {
+      this.callStopTime();
       sendMsg('User Won');
       stateChanges["modal"] = "win";
     }
@@ -176,7 +163,7 @@ class Board extends React.Component {
   render() {
     let divColor = 'grey';
     if (this.state.highestTile > 64) {
-      divColor = this.colors[this.state.highestTile];
+      divColor = getComputedStyle(document.documentElement).getPropertyValue(`--color-${this.state.highestTile}x`);
     }
 
    
@@ -203,8 +190,6 @@ class Board extends React.Component {
             { this.renderModal(this.state.modal) }
             <BoardContainer renderSquare={this.renderSquare}/>
             <TileContainer 
-                colors={this.colors}
-                stopTime={this.callStopTime} 
                 onMount={this.onBoardMount}
                 updateHighestTile={this.updateHighestTile}/>
           </main> 
