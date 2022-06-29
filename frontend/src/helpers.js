@@ -42,6 +42,10 @@ function transpose(array) {
     return newArr;
 }
 
+/*
+ *  input: array of arrays representing gameState, manipulated according to slide direction
+ *  output: array of changes made to input matrix (modified in-place)
+ */
 function slideHelper(cols) {
     let changes = []
     // for each column
@@ -94,6 +98,13 @@ function slideHelper(cols) {
     return changes;
 }
 
+/* 
+ *  input: gameState matrix
+ *  output: struct {
+ *      spaces: array of empty spaces
+ *      count: number of empty spaces
+ *  }
+ */
 function getEmptySpaces(gameState) {
     let tempGameState = [];
     let count = 0;
@@ -111,6 +122,57 @@ function getEmptySpaces(gameState) {
         'count': count
     };
 }
+
+/* 
+ *  input: gs       - gameState
+ *         gsSetter - (input) => TileContainer.state.gameState = input
+ *
+ */
+function slideUp(gs, gsSetter) {
+    // temporary gameState, oriented so that we slide along inner array
+    let cols = transpose(gs);
+    // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
+    let changes = slideHelper(cols);
+    if (changes.length > 0) {
+        gsSetter(insertRandomTile(transpose(cols)));
+    }
+}
+function slideLeft(gs, gsSetter) {
+    let cols = gs;
+    let changes = slideHelper(cols);
+    if (changes.length > 0) {
+        gsSetter(insertRandomTile(cols));
+    }
+}
+function slideDown(gs, gsSetter) {
+    let cols = transpose(gs);
+    for (let c in cols) {
+        cols[c].reverse();
+    }
+    let changes = slideHelper(cols);
+    if (changes.length > 0) {
+        for (let c in cols) {
+            cols[c].reverse();
+        }
+        gsSetter(insertRandomTile(transpose(cols)));
+    }
+}
+function slideRight(gs, gsSetter) {
+    let cols = gs;
+    for (let c in cols) {
+        cols[c].reverse();
+    }
+    let changes = slideHelper(cols);
+    if (changes.length > 0) {
+        for (let c in cols) {
+            cols[c].reverse()
+        }
+        gsSetter(insertRandomTile(cols));
+    }
+}
+
+
+/* ************ AI-specific helpers ************ */
 
 function numEmptySpacesAvailable(gameState) {
     let count = 0;
@@ -156,4 +218,23 @@ function adjacentTileMatchesAvailable(gameState) {
     return false
 }
 
-export {generateRandomTile, transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable}
+function insertRandomTile(arr) {
+    let tempGameState = arr;
+    let tmp = generateRandomTile(tempGameState);
+    tempGameState[tmp["space"][0]][[tmp["space"][1]]] = tmp["val"]
+    return tempGameState;
+}
+
+
+
+export {
+    adjacentTileMatchesAvailable, 
+    generateRandomTile, 
+    numEmptySpacesAvailable, 
+    transpose, 
+    slideHelper,
+    slideUp,
+    slideDown,
+    slideLeft,
+    slideRight
+}

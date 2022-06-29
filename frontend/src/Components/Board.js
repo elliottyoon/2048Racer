@@ -50,7 +50,10 @@ class Board extends React.Component {
     
     this.timeStarter = null;
     this.timeStopper = null;
-    this.boardSetter = null;
+    
+    this.setGameState = null;
+    this.getGameState = null;
+    this.resetGameState = null;
 
   }
 
@@ -79,9 +82,10 @@ class Board extends React.Component {
     this.timeStopper = setter[0];
     this.timeStarter = setter[1];
   }
-  onBoardMount(setter) {
-    console.log(setter);
-    this.boardSetter = setter;
+  onBoardMount(importFuncs) {
+    this.setGameState = importFuncs[0];
+    this.getGameState = importFuncs[1];
+    this.resetGameState = importFuncs[2];
   }
 
   startTimeForAll() {
@@ -101,7 +105,7 @@ class Board extends React.Component {
     this.timeStopper();
   }
   resetBoard() {
-    this.boardSetter();
+    this.resetGameState();
     this.setState({
       modal: null,
     })

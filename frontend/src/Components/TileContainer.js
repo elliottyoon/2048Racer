@@ -1,6 +1,7 @@
 import React from 'react';
 import Tile from './Tile.js'
-import {generateRandomTile, transpose, slideHelper} from '../helpers.js'
+import {slideUp, slideDown, slideLeft, slideRight,
+        generateRandomTile } from '../helpers.js'
 
 /*
 
@@ -30,19 +31,13 @@ class TileContainer extends React.Component {
 
         this.highlightedTile = null;
 
+        this.getBoard = this.getBoard.bind(this);
+        this.setBoard = this.setBoard.bind(this);
         this.resetBoard = this.resetBoard.bind(this);
         
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.renderTile = this.renderTile.bind(this);
-        this.insertRandomTile = this.insertRandomTile.bind(this);
-
-        this.slideUp = this.slideUp.bind(this);
-        this.slideDown = this.slideDown.bind(this);
-        this.slideRight = this.slideRight.bind(this);
-        this.slideLeft = this.slideLeft.bind(this);
  
-        this.updateGameState = this.updateGameState.bind(this);
-
         // arrow key functionality
         window.addEventListener('keydown', this.handleKeyPress)
 
@@ -81,7 +76,6 @@ class TileContainer extends React.Component {
             for (let j = 0; j < 4; j++) {
                 if (gsClone[i][j] > this.props.highestTile) {
                     tileValPlaceholder = gsClone[i][j];
-                    console.log('updated');
                     updated = true;
                 }
             }
@@ -92,7 +86,21 @@ class TileContainer extends React.Component {
     }
 
     componentWillMount() {
-        this.props.onMount(this.resetBoard);
+        const exportFuncs = [
+            this.setBoard, 
+            this.getBoard,
+            this.resetBoard,
+        ]
+        this.props.onMount(exportFuncs);
+    }
+
+    getBoard() {
+        return this.state.gameState;
+    }
+    setBoard(newGameState) {
+        this.setState({
+            gameState: newGameState
+        });
     }
 
     resetBoard() {
@@ -125,136 +133,40 @@ class TileContainer extends React.Component {
             // up
             case 'ArrowUp':
             case 'w':
-                this.slideUp();
+                slideUp(this.state.gameState, (newGameState) => {
+                    this.setState({
+                        gameState: newGameState
+                    });
+                });
                 break;
             // down
             case 'ArrowDown':
             case 's':
-                this.slideDown();
+                slideDown(this.state.gameState, (newGameState) => {
+                    this.setState({
+                        gameState: newGameState
+                    });
+                });
                 break;
             // right
             case 'ArrowRight':
             case 'd':
-                this.slideRight();
+                slideRight(this.state.gameState, (newGameState) => {
+                    this.setState({
+                        gameState: newGameState
+                    });
+                });
                 break;
             // left
             case 'ArrowLeft':
             case 'a':
-                this.slideLeft();
+                slideLeft(this.state.gameState, (newGameState) => {
+                    this.setState({
+                        gameState: newGameState
+                    });
+                });
                 break;
         }
-    }
-
-    async slideUp() {
-        // temporary gameState, oriented so that we slide along inner array
-        let cols = transpose(this.state.gameState);
-        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
-        
-        let changes = slideHelper(cols);
-        if (changes.length > 0) {
-            this.setState({
-                gameState: this.insertRandomTile(transpose(cols))
-            });
-        }
-        
-    }
-
-    /* broken animation functionality. was in slideDirection, but putting here for now:
-
-    marge animation: animation: pop 200ms ease 100ms
-
-    // iterates through slides and merges: animates accordingly and then updates state after animations finish
-            let animate = new Promise((resolve, reject) => {
-                window.requestAnimationFrame(async () => { 
-                    for (let c in changes) {
-                        let change = changes[c];
-                        // merge animation
-                        if (change["didMerge"] == true) {
-                            await this.mergeTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
-                        }
-                        // slide animation
-                        else {
-                            console.log(`tile-${change["start"]}-${change["outerIdx"]}`);
-                            await this.slideTile(document.getElementById(`tile-${change["start"]}-${change["outerIdx"]}`), 0, change["end"] - change["start"]);
-                        }
-                        
-                    }
-                });
-                resolve();
-            });
-    */
-
-    async slideLeft() {
-        // temporary gameState, oriented so that we slide along inner array
-        let cols = this.state.gameState;
-        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
-        
-        let changes = slideHelper(cols);
-        if (changes.length > 0) {
-            this.setState({
-                gameState: this.insertRandomTile(cols)
-            });
-        }
-    }
-
-    async slideDown() {
-        // temporary gameState, oriented so that we slide along inner array
-        let cols = transpose(this.state.gameState);
-        for (let c in cols) {
-            cols[c].reverse()
-        }
-        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
-        
-        let changes = slideHelper(cols);
-        if (changes.length > 0) {
-            for (let c in cols) {
-                cols[c].reverse()
-            }
-            this.setState({
-                gameState: this.insertRandomTile(transpose(cols))
-            });
-        }
-    }
-
-    async slideRight() {
-        // temporary gameState, oriented so that we slide along inner array
-        let cols = this.state.gameState.slice();     
-
-
-        for (let c in cols) {
-            cols[c] = cols[c].slice().reverse()
-        }
-        // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
-        let changes = slideHelper(cols);
-        if (changes.length > 0) {
-            for (let c in cols) {
-                cols[c].reverse();
-            }
-            this.setState({
-                gameState: this.insertRandomTile(cols)
-            });
-        }
-    }
-
-
-    updateGameState(arrays) {
-        // takes array of [row, col, val] arrays
-        let tempState = this.state.gameState;
-        for (let i in arrays) {
-            let arr = arrays[i];
-            tempState[arr[0]][arr[1]] = arr[2];
-        }
-        
-        this.setState({
-            gameState: tempState, 
-        });
-    }
-
-    insertRandomTile(arr) {
-        let tempGameState = arr;
-        let tmp = generateRandomTile(tempGameState);
-        tempGameState[tmp["space"][0]][[tmp["space"][1]]] = tmp["val"]
-        return tempGameState;
     }
 
     renderTile(i, j, val) {

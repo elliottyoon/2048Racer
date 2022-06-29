@@ -4,7 +4,10 @@ import Square from './Square';
 import BoardContainer from './BoardContainer';
 import TileContainer from './TileContainer';
 
-import { transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable } from '../helpers.js';
+import {
+    slideUp, slideRight, slideDown, slideLeft,
+    transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable 
+} from '../helpers.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRedo} from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +24,13 @@ class AI extends React.Component {
         this.updateHighestTile = this.updateHighestTile.bind(this);
         this.onBoardMount = this.onBoardMount.bind(this);
 
-        this.boardSetter = null;
+        // newGameState => sets TileContainer.state.gameState = newGameState
+        this.setGameState = null;
+        // ()           => returns TileContainer.state.gameState
+        this.getGameState = null;
+        // ()           => resets TileContainer.state.gameState to random starting position
+        this.resetGameState = null;
+
     }
 
     /*
@@ -32,8 +41,7 @@ class AI extends React.Component {
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
                 3. Free tiles: penalty for having too few tiles
 
-    TODO: export the slideAction, insertRandomTile functions to helpers.js
-          create getter method for gameState
+    TODO: export the slideAction: gameState -> changes functions to helpers.js
     */
 
     renderSquare(i) {
@@ -51,10 +59,12 @@ class AI extends React.Component {
         });
     }
 
-    onBoardMount(setter) {
-        console.log(setter);
-        this.boardSetter = setter;
+    onBoardMount(importFuncs) {
+        this.setGameState = importFuncs[0];
+        this.getGameState = importFuncs[1];
+        this.resetGameState = importFuncs[2];
     }
+
 
     render() {
         return (
