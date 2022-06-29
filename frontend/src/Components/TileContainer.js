@@ -19,7 +19,6 @@ class TileContainer extends React.Component {
 
         this.state = {
             currVal: Math.floor(Math.random() * 10) < 2 ? 4 : 2,
-            highestTile: 0,
             gameState: [
                 ['', '', '', ''],
                 ['', '', '', ''],
@@ -76,17 +75,19 @@ class TileContainer extends React.Component {
     componentDidUpdate() {
         // updates highest tile if necessary
         const gsClone = this.state.gameState;
+        let tileValPlaceholder = null;
         let updated = false;
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
-                if (gsClone[i][j] > this.highestTile) {
-                    this.highestTile = gsClone[i][j];
+                if (gsClone[i][j] > this.props.highestTile) {
+                    tileValPlaceholder = gsClone[i][j];
+                    console.log('updated');
                     updated = true;
                 }
             }
         }
         if (updated) {
-            this.props.updateHighestTile(this.highestTile);
+            this.props.updateHighestTile(tileValPlaceholder);
         }
     }
 
@@ -342,7 +343,6 @@ class TileContainer extends React.Component {
     }
     
     render() {
-        // console.log(this.state.gameState);
         const content = [];
         let temp = '';
         for (let i = 0; i < 4; i++) {

@@ -197,6 +197,7 @@ class Board extends React.Component {
             { this.renderModal(this.state.modal) }
             <BoardContainer renderSquare={this.renderSquare}/>
             <TileContainer 
+                highestTile={this.state.highestTile}
                 onMount={this.onBoardMount}
                 updateHighestTile={this.updateHighestTile}/>
           </main> 

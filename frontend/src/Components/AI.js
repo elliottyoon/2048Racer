@@ -57,6 +57,7 @@ class AI extends React.Component {
                 <div className="ai-board">
                     <BoardContainer renderSquare={this.renderSquare}/>
                     <TileContainer 
+                        highestTile={this.state.highestTile}
                         onMount={this.onBoardMount}
                         updateHighestTile={this.updateHighestTile}/>
                 </div>
