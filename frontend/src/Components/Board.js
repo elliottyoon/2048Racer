@@ -157,7 +157,7 @@ class Board extends React.Component {
     const isConnected = this.isConnected;
 
     btn.addEventListener("mouseover", function() {
-      this.textContent = (isConnected == true ? "Multiplayer" : "Singleplayer");
+      this.textContent = (isConnected == true ? "Multiplayer" : "Single player");
     })
     btn.addEventListener("mouseout", function() {
       this.textContent = "Start Race";
