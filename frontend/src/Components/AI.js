@@ -22,6 +22,15 @@ class AI extends React.Component {
         this.boardSetter = null;
     }
 
+    /*
+
+    outline: Minimax search with alpha-beta pruning. Static evaluation function involves
+                1. Monotonicity: values of the tiles are either increasing or decreasing along 
+                   both the left/right and up/down directions
+                2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
+                3. Free tiles: penalty for having too few tiles
+    */
+
     renderSquare(i) {
         return <Square />;
     }

@@ -26,7 +26,7 @@ class Board extends React.Component {
      * 
      * 
      */
-    this.isConnected = true;
+    this.isConnected = false;
 
 
     this.state = {

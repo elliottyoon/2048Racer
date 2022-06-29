@@ -1,6 +1,6 @@
 import React from 'react';
 import Tile from './Tile.js'
-import {findFurthestOpenSpace, generateRandomTile} from '../helpers.js'
+import {generateRandomTile, transpose, slideHelper} from '../helpers.js'
 
 /*
 
@@ -42,8 +42,6 @@ class TileContainer extends React.Component {
         this.slideRight = this.slideRight.bind(this);
         this.slideLeft = this.slideLeft.bind(this);
  
-        this.slideHelper = this.slideHelper.bind(this);
-        this.transpose = this.transpose.bind(this);
         this.updateGameState = this.updateGameState.bind(this);
 
         // arrow key functionality
@@ -148,13 +146,13 @@ class TileContainer extends React.Component {
 
     async slideUp() {
         // temporary gameState, oriented so that we slide along inner array
-        let cols = this.transpose(this.state.gameState);
+        let cols = transpose(this.state.gameState);
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
-        let changes = this.slideHelper(cols);
+        let changes = slideHelper(cols);
         if (changes.length > 0) {
             this.setState({
-                gameState: this.insertRandomTile(this.transpose(cols))
+                gameState: this.insertRandomTile(transpose(cols))
             });
         }
         
@@ -190,7 +188,7 @@ class TileContainer extends React.Component {
         let cols = this.state.gameState;
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
-        let changes = this.slideHelper(cols);
+        let changes = slideHelper(cols);
         if (changes.length > 0) {
             this.setState({
                 gameState: this.insertRandomTile(cols)
@@ -200,19 +198,19 @@ class TileContainer extends React.Component {
 
     async slideDown() {
         // temporary gameState, oriented so that we slide along inner array
-        let cols = this.transpose(this.state.gameState);
+        let cols = transpose(this.state.gameState);
         for (let c in cols) {
             cols[c].reverse()
         }
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
         
-        let changes = this.slideHelper(cols);
+        let changes = slideHelper(cols);
         if (changes.length > 0) {
             for (let c in cols) {
                 cols[c].reverse()
             }
             this.setState({
-                gameState: this.insertRandomTile(this.transpose(cols))
+                gameState: this.insertRandomTile(transpose(cols))
             });
         }
     }
@@ -226,7 +224,7 @@ class TileContainer extends React.Component {
             cols[c] = cols[c].slice().reverse()
         }
         // changes to gamestate. holds {outerIdx: int, !!for inner index: start: int, end: int ,!! merge?: bool } objects
-        let changes = this.slideHelper(cols);
+        let changes = slideHelper(cols);
         if (changes.length > 0) {
             for (let c in cols) {
                 cols[c].reverse();
@@ -236,79 +234,7 @@ class TileContainer extends React.Component {
             });
         }
     }
-                            
 
-
-    slideHelper(cols) {
-        let changes = []
-        // for each column
-        for (let col = 0; col < 4; col++) {
-
-            // left endpoint for findFurthestOpenSpace (non-inclusive)
-            let lendpoint = -1;
-            
-            for (let i = 1; i < 4; i++) {      // we only care if this is a nonempty tile
-                if (cols[col][i] !== '') {
-                    // temp index, didMerge
-                    let idxMerge = findFurthestOpenSpace(i, cols[col], lendpoint);
-                    // if there is a valid move
-                    if (idxMerge["index"] != i) {
-                        // temp index
-                        let index = idxMerge["index"];
-
-                        if (idxMerge["didMerge"]) {
-                            changes.push({
-                                "outerIdx": col,
-                                "start": i,
-                                "end": idxMerge["index"],
-                                "didMerge": true,
-                            });
-
-                            // updates lendpoint to the position of newly merged tile
-                            lendpoint = index;
-
-                            let mergedValue = cols[col][i] * 2;
-                            // updates temporary game state
-                            cols[col][index] = mergedValue;
-                            cols[col][i] = '';
-
-                        } else {
-                            changes.push({
-                                "outerIdx": col,
-                                "start": i,
-                                "end": idxMerge["index"],
-                                "didMerge": false,
-                            })
-
-                            // updates gameState
-                            cols[col][index] = cols[col][i];
-                            cols[col][i] = '';
-                        }
-                    }
-                }
-            }
-        }
-        return changes;
-    }
-
-    transpose(array) {
-        let newArr = [['', '', '', ''], // col 0
-                    ['', '', '', ''], // col 1
-                    ['', '', '', ''], // col 2
-                    ['', '', '', '']] // col 3
-        let val = '';
-
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                val = array[i][j];
-                if (val !== '')  {
-                    newArr[j][i] = val;
-                }
-            }
-        }
-
-        return newArr;
-    }
 
     updateGameState(arrays) {
         // takes array of [row, col, val] arrays
