@@ -17,13 +17,8 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
 
-    try {
-      connect();
-      this.isConnected = true;
-    } catch(error) {
-      console.error(error);
-      this.isConnected = false;
-    }
+    this.isConnected = false;
+
 
     this.state = {
       timeStart: (new Date()).getTime(),
@@ -98,7 +93,13 @@ class Board extends React.Component {
     this.setState({
       modal: null,
     })
-    startServerTime();
+    if (this.isConnected) {
+      startServerTime();
+    } else {
+      this.timeStarter((new Date()).getTime());
+      this.resetBoard();
+    }
+    
   }
 
   callStopTime() {
@@ -153,8 +154,20 @@ class Board extends React.Component {
       this.setState(prevState => ({
         chatHistory: [...prevState.chatHistory, messageBody],
       }))
-    }
-    );
+    });
+
+    
+
+    // change start button text based on singleplayer or multiplayer mode
+    let btn = document.querySelector("#start-button");
+    const isConnected = this.isConnected;
+
+    btn.addEventListener("mouseover", function() {
+      this.textContent = (isConnected == true ? "Multiplayer" : "Singleplayer");
+    })
+    btn.addEventListener("mouseout", function() {
+      this.textContent = "Start Race";
+    })
   }
 
   
@@ -181,7 +194,7 @@ class Board extends React.Component {
                 {this.state.highestTile}
               </div>
             </div>
-            <button onClick={this.startTimeForAll}>
+            <button onClick={this.startTimeForAll} id="start-button">
               Start Race
             </button>
             <ChatHistory chatHistory={this.state.chatHistory} />
