@@ -19,7 +19,7 @@ function generateRandomTile(gameState) {
 
     return {
         'space': spaceIndices,
-        'val': Math.floor(Math.random() * 10) < 2 ? 4 : 2,
+        'val': Math.floor(Math.random() * 10) < 1 ? 4 : 2,
     }
 }
 
