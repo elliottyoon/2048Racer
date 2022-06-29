@@ -112,4 +112,48 @@ function getEmptySpaces(gameState) {
     };
 }
 
-export {generateRandomTile, transpose, slideHelper}
+function numEmptySpacesAvailable(gameState) {
+    let count = 0;
+
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (gameState[i][j] == '') {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+function adjacentTileMatchesAvailable(gameState) {
+    let tile;
+    let new_i;
+    let new_j;
+    const directions = [[1,0], [-1,0], [0,1], [0,-1]]
+
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            tile = gameState[i][j];
+            if (tile != '') {
+                // check the tiles directly adjacent
+                for (let k = 0; k < 4; k++) {
+                    new_i = i + directions[k][0];
+                    new_j = j + directions[k][1];
+
+                    // check for out of bounds errors
+                    if (new_i < 0 || new_j < 0 || new_i > 3 || new_j > 3) {
+                        continue;
+                    } else {
+                        if (gameState[new_i][new_j] == tile) {
+                            return true;
+                        }
+                    } 
+                }
+            }      
+        }
+    }
+    
+    return false
+}
+
+export {generateRandomTile, transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable}
