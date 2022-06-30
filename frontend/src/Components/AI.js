@@ -62,7 +62,7 @@ class AI extends React.Component {
                    both the left/right and up/down dirs
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
                 3. Free tiles: penalty for having too few tiles 
-        TODO: debug run
+        TODO: debug run (and monotonicity/smoothness functions)
     */
 
     /* ====================================== Interface Methods */
@@ -244,7 +244,7 @@ class AI extends React.Component {
                     if (maxValue(newGameState) == 2048) {
                         return {
                             move: dir,
-                            score: 69420,
+                            score: 10000,
                             positions: positions,
                             cutoff: cutoffs
                         };
@@ -369,9 +369,9 @@ class AI extends React.Component {
     iterativeDeep() {
         let startTime = (new Date()).getTime(); 
         let depth = 0;
-        let best;
+        let best = null;
         do {
-            let newBest = this.search(depth, -10000, 69420, 0, 0, true, this.getGameState());
+            let newBest = this.search(depth, -10000, 10000, 0, 0, true, this.getGameState());
 
             if (newBest.move == -1) {
                 // break;
@@ -382,6 +382,7 @@ class AI extends React.Component {
 
         } while ((new Date()).getTime() - startTime < this.state.thinkTime);
         // } while( depth < 4 );
+        console.log(best);
         return best;
     }
 
@@ -389,7 +390,12 @@ class AI extends React.Component {
         let intervalId = setInterval(() => {
             // if 2048 or something
             // => clearInterval(intervalID)
-            slideInDirection(this.getGameState(), this.setGameState, this.getBestMove().move);
+            let bestMove = this.getBestMove();
+            if (bestMove === null) {
+                clearInterval(intervalId);
+            } else {
+                slideInDirection(this.getGameState(), this.setGameState, bestMove.move);
+            }
         }, this.state.thinkTime);
     }
 
@@ -410,7 +416,7 @@ class AI extends React.Component {
                 };
             }
             i++;
-        }, 100);
+        }, 50);
     }
 
     /* ====================================== Lifecycle Methods */

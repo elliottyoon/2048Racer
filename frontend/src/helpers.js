@@ -330,7 +330,7 @@ function move(gameState, dir) {
             if (changes.length > 0) {
                 return insertRandomTile(transpose(cols));
             }
-            return gs;
+            return false;
         case 1: // right
             cols = gs;
             for (let c in cols) {
@@ -343,7 +343,7 @@ function move(gameState, dir) {
                 }
                 return insertRandomTile(cols);
             }
-            return gs;
+            return false;
         case 2: // down
             cols = transpose(gs);
             for (let c in cols) {
@@ -356,14 +356,14 @@ function move(gameState, dir) {
                 }
                 return insertRandomTile(transpose(cols));
             }
-            return gs;
+            return false;
         case 3: // left
             cols = gs;
             changes = slideHelper(cols);
             if (changes.length > 0) {
                 return insertRandomTile(cols);
             }
-            return gs;
+            return false;
     }
 }
 
