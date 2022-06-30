@@ -283,65 +283,65 @@ class AI extends React.Component {
             }
         }
         // MIN player, aka computer placing tiles
-        // else {
-        //     bestScore = beta;
-        //     // place 2, 4 in each cell and measure impact on player 
-        //     let candidates = [];
-        //     let availableSpaces = emptySpacesAvailable(gs); // [[x,y], ...]
-        //     let scores = {
-        //         2: [],
-        //         4: []
-        //     }
-        //     for (let val in scores) {
-        //         for (let i in availableSpaces) {
-        //             scores[val].push(null);
-        //             let space = availableSpaces[i];
-        //             let tempGameState = gs;
-        //             tempGameState[space[0]][space[1]] = val;
-        //             // add 'annoyingness' to scores object
-        //             scores[val][i] = -this.smoothness(tempGameState) + numIslands(tempGameState);
-        //         }
-        //     }
+        else {
+            bestScore = beta;
+            // place 2, 4 in each cell and measure impact on player 
+            let candidates = [];
+            let availableSpaces = emptySpacesAvailable(gs); // [[x,y], ...]
+            let scores = {
+                2: [],
+                4: []
+            }
+            for (let val in scores) {
+                for (let i in availableSpaces) {
+                    scores[val].push(null);
+                    let space = availableSpaces[i];
+                    let tempGameState = gs;
+                    tempGameState[space[0]][space[1]] = val;
+                    // add 'annoyingness' to scores object
+                    scores[val][i] = -this.smoothness(tempGameState) + numIslands(tempGameState);
+                }
+            }
 
-        //     // pick most annoying move
-        //     let maxScore = Math.max(Math.max.apply(null, scores[2]), Math.max.apply(null, scores[4]));
-        //     for (let val in scores) { // 2, 4
-        //         for (let i = 0; i < scores[val].length; i++) {
-        //             if (scores[val][i] == maxScore) {
-        //                 candidates.push({
-        //                     position: availableSpaces[i], 
-        //                     value: val
-        //                 })
-        //             }
-        //         }
-        //     }
+            // pick most annoying move
+            let maxScore = Math.max(Math.max.apply(null, scores[2]), Math.max.apply(null, scores[4]));
+            for (let val in scores) { // 2, 4
+                for (let i = 0; i < scores[val].length; i++) {
+                    if (scores[val][i] == maxScore) {
+                        candidates.push({
+                            position: availableSpaces[i], 
+                            value: val
+                        })
+                    }
+                }
+            }
 
-        //     // search on each candidate
-        //     for (let i = 0; i < candidates.length; i++) {
-        //         let pos = candidates[i].position;
-        //         let val = candidates[i].value;
-        //         let newGameState = gs;
+            // search on each candidate
+            for (let i = 0; i < candidates.length; i++) {
+                let pos = candidates[i].position;
+                let val = candidates[i].value;
+                let newGameState = gs;
 
-        //         newGameState[pos[0]][pos[1]] = val;
-        //         positions++;
-        //         res = this.search(depth, alpha, bestScore, positions, cutoffs, true, newGameState);
-        //         positions = res.positions;
-        //         cutoffs = res.cutoffs;
+                newGameState[pos[0]][pos[1]] = val;
+                positions++;
+                res = this.search(depth, alpha, bestScore, positions, cutoffs, true, newGameState);
+                positions = res.positions;
+                cutoffs = res.cutoffs;
 
-        //         if (res.score < bestScore) {
-        //             bestScore = res.score;
-        //         }
-        //         if (bestScore < alpha) {
-        //             cutoffs++;
-        //             return {
-        //                 move: null,
-        //                 score: alpha,
-        //                 positions: positions,
-        //                 cutoffs: cutoffs
-        //             }
-        //         }
-        //     }
-        // }
+                if (res.score < bestScore) {
+                    bestScore = res.score;
+                }
+                if (bestScore < alpha) {
+                    cutoffs++;
+                    return {
+                        move: null,
+                        score: alpha,
+                        positions: positions,
+                        cutoffs: cutoffs
+                    }
+                }
+            }
+        }
         return {
             move: bestMove,
             score: bestScore,
