@@ -399,16 +399,17 @@ class AI extends React.Component {
 
     componentDidMount() {
         let i = 0;
-        setInterval(() => {
-                if (i % 2 == 0) {
-                    this.slideRight();
-                }
-                else {
-                    this.slideLeft();
-                }
-                i++;
-            }, 1000
-        )
+        let intervalID = setInterval(() => {
+            // if 2048 or something
+            // => clearInterval(intervalID);
+            if (i % 2 == 0) {
+                this.slideRight();
+            }
+            else {
+                this.slideDown();
+            }
+            i++;
+        }, 1000);
         //this.run();
     }
 

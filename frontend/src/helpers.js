@@ -138,7 +138,12 @@ function slideUp(gs, gsSetter) {
     }
 }
 function slideLeft(gs, gsSetter) {
-    let cols = gs;
+    let cols = [['','','',''],['','','',''],['','','',''],['','','','']];
+    for (let i=0; i<4; i++) {
+        for (let j=0; j<4; j++) {
+            cols[i][j] = gs[i][j];
+        }
+    }
     let changes = slideHelper(cols);
     if (changes.length > 0) {
         gsSetter(insertRandomTile(cols));
@@ -158,7 +163,12 @@ function slideDown(gs, gsSetter) {
     }
 }
 function slideRight(gs, gsSetter) {
-    let cols = gs;
+    let cols = [['','','',''],['','','',''],['','','',''],['','','','']];
+    for (let i=0; i<4; i++) {
+        for (let j=0; j<4; j++) {
+            cols[i][j] = gs[i][j];
+        }
+    }
     for (let c in cols) {
         cols[c].reverse();
     }
