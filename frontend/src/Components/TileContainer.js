@@ -98,7 +98,6 @@ class TileContainer extends React.Component {
         return this.state.gameState;
     }
     setBoard(newGameState) {
-        console.log('whatchu doin');
         this.setState({
             gameState: newGameState
         });

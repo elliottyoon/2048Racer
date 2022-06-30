@@ -170,6 +170,22 @@ function slideRight(gs, gsSetter) {
         gsSetter(insertRandomTile(cols));
     }
 }
+function slideInDirection(gs, gsSetter, dir) {
+    switch (dir) {
+        case 0:
+            slideUp(gs, gsSetter);
+            break;
+        case 1: 
+            slideRight(gs, gsSetter);
+            break;
+        case 2:
+            slideDown(gs, gsSetter);
+            break;
+        case 3: 
+            slideLeft(gs, gsSetter);
+            break;
+    }
+}
 
 
 /* ************ AI-specific helpers ************ */
@@ -346,5 +362,6 @@ export {
     slideUp,
     slideDown,
     slideLeft,
-    slideRight
+    slideRight,
+    slideInDirection
 }

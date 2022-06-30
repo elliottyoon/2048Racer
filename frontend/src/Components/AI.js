@@ -8,7 +8,8 @@ import {
     slideUp, slideRight, slideDown, slideLeft, move,
     transpose, slideHelper, maxValue, numIslands, 
     numEmptySpacesAvailable, emptySpacesAvailable,
-    adjacentTileMatchesAvailable 
+    adjacentTileMatchesAvailable, 
+    slideInDirection
 } from '../helpers.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,6 +24,8 @@ class AI extends React.Component {
             gameLost: false,
             thinkTime: 1000 // in milliseconds
         }
+
+        this.running = true; // is ai currently running
 
         this.renderSquare = this.renderSquare.bind(this);
         this.updateHighestTile = this.updateHighestTile.bind(this);
@@ -296,7 +299,12 @@ class AI extends React.Component {
                 for (let i in availableSpaces) {
                     scores[val].push(null);
                     let space = availableSpaces[i];
-                    let tempGameState = gs;
+                    let tempGameState = [['','','',''],['','','',''],['','','',''],['','','','']];
+                    for (let u=0; u<4; u++) {
+                        for (let v=0; v<4; v++) {
+                            tempGameState[u][v] = gs[u][v]
+                        }
+                    }
                     tempGameState[space[0]][space[1]] = val;
                     // add 'annoyingness' to scores object
                     scores[val][i] = -this.smoothness(tempGameState) + numIslands(tempGameState);
@@ -320,7 +328,12 @@ class AI extends React.Component {
             for (let i = 0; i < candidates.length; i++) {
                 let pos = candidates[i].position;
                 let val = candidates[i].value;
-                let newGameState = gs;
+                let newGameState = [['','','',''],['','','',''],['','','',''],['','','','']];
+                for (let u=0; u<4; u++) {
+                    for (let v=0; v<4; v++) {
+                        newGameState[u][v] = gs[u][v];
+                    }
+                }
 
                 newGameState[pos[0]][pos[1]] = val;
                 positions++;
@@ -370,46 +383,33 @@ class AI extends React.Component {
             depth++;
 
         // } while ((new Date()).getTime() - startTime < this.state.thinkTime);
-        } while( depth < 2 );
+        } while( depth < 4 );
         return best;
     }
 
     run() {
-        let best = this.iterativeDeep();
         // TODO finish this
-
+        for (let i=0; i<50;i++) {
+            console.log(i);
+            slideInDirection(this.getGameState(), this.setGameState, this.getBestMove().move);
+        }
     }
 
     /* ====================================== Lifecycle Methods */
 
     componentDidMount() {
-        // this.slideRight();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // this.slideRight();
-        // this.slideUp();
-        // this.slideDown();
-        // this.slideRight();
-        // console.log(move(this.getGameState(), 1))
-        console.log(this.getBestMove());
-
+        let i = 0;
+        setInterval(() => {
+                if (i % 2 == 0) {
+                    this.slideRight();
+                }
+                else {
+                    this.slideLeft();
+                }
+                i++;
+            }, 1000
+        )
+        //this.run();
     }
 
 
@@ -421,13 +421,13 @@ class AI extends React.Component {
                     <TileContainer 
                         highestTile={this.state.highestTile}
                         onMount={this.onBoardMount}
-                        updateHighestTile={this.updateHighestTile}/>
+                        updateHighestTile={(update) => {console.log(update)}}/>
                 </div>
                 <div className="bottom">
                     <button className={"reset-board"}
                         tabIndex={"0"}
                         //onClick={this.boardSetter}
-                        onClick={() => {console.log(move(this.getGameState(),1))}}
+                        onClick={() => {this.resetGameState()}}
                         aria-label="Reset board"
                         data-balloon-pos="down">
                     <FontAwesomeIcon icon={ faRedo } size="lg"/>
