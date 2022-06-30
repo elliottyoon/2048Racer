@@ -255,8 +255,6 @@ class TileContainer extends React.Component {
     }
     
     render() {
-        console.log('fred');
-        
         let content = [];
         let temp = '';
         for (let i = 0; i < 4; i++) {

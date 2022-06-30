@@ -6,9 +6,8 @@ import TileContainer from './TileContainer';
 
 import {
     slideUp, slideRight, slideDown, slideLeft, move,
-    transpose, slideHelper, maxValue, numIslands, 
-    numEmptySpacesAvailable, emptySpacesAvailable,
-    adjacentTileMatchesAvailable, 
+    transpose, maxValue, numIslands, 
+    numEmptySpacesAvailable, emptySpacesAvailable, 
     slideInDirection
 } from '../helpers.js';
 
@@ -22,7 +21,7 @@ class AI extends React.Component {
         this.state = {
             highestTile: 0,
             gameLost: false,
-            thinkTime: 1000 // in milliseconds
+            thinkTime: 100 // in milliseconds
         }
 
         this.running = true; // is ai currently running
@@ -44,6 +43,7 @@ class AI extends React.Component {
         this.getBestMove = this.getBestMove.bind(this);
         this.iterativeDeep = this.iterativeDeep.bind(this);
 
+        this.basicCorner = this.basicCorner.bind(this);
         this.run = this.run.bind(this);
 
         // newGameState => sets TileContainer.state.gameState = newGameState
@@ -62,9 +62,7 @@ class AI extends React.Component {
                    both the left/right and up/down dirs
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
                 3. Free tiles: penalty for having too few tiles 
-
-            TODO: figure out why move() modifies actual board render
-                fix reset board button
+        TODO: debug run
     */
 
     /* ====================================== Interface Methods */
@@ -90,16 +88,16 @@ class AI extends React.Component {
     }
 
     slideUp() {
-        slideUp(this.getGameState(), this.setGameState);
+        return slideUp(this.getGameState(), this.setGameState);
     }
     slideRight() {
-        slideRight(this.getGameState(), this.setGameState);
+        return slideRight(this.getGameState(), this.setGameState);
     }
     slideDown() {
-        slideDown(this.getGameState(), this.setGameState);
+        return slideDown(this.getGameState(), this.setGameState);
     }
     slideLeft() {
-        slideLeft(this.getGameState(), this.setGameState);
+        return slideLeft(this.getGameState(), this.setGameState);
     }
 
     /* ====================================== AI Methods */
@@ -382,34 +380,43 @@ class AI extends React.Component {
             }
             depth++;
 
-        // } while ((new Date()).getTime() - startTime < this.state.thinkTime);
-        } while( depth < 4 );
+        } while ((new Date()).getTime() - startTime < this.state.thinkTime);
+        // } while( depth < 4 );
         return best;
     }
 
     run() {
-        // TODO finish this
-        for (let i=0; i<50;i++) {
-            console.log(i);
+        let intervalId = setInterval(() => {
+            // if 2048 or something
+            // => clearInterval(intervalID)
             slideInDirection(this.getGameState(), this.setGameState, this.getBestMove().move);
-        }
+        }, this.state.thinkTime);
     }
 
-    /* ====================================== Lifecycle Methods */
-
-    componentDidMount() {
+    /* ====================================== Algorithms        */
+    basicCorner() {
         let i = 0;
         let intervalID = setInterval(() => {
             // if 2048 or something
             // => clearInterval(intervalID);
             if (i % 2 == 0) {
-                this.slideRight();
+                if (this.slideRight() == false) {
+                    this.slideLeft();
+                }
             }
             else {
-                this.slideDown();
+                if (this.slideDown() == false) {
+                    this.slideRight();
+                };
             }
             i++;
-        }, 1000);
+        }, 100);
+    }
+
+    /* ====================================== Lifecycle Methods */
+
+    componentDidMount() {
+        this.basicCorner();
         //this.run();
     }
 
@@ -422,7 +429,7 @@ class AI extends React.Component {
                     <TileContainer 
                         highestTile={this.state.highestTile}
                         onMount={this.onBoardMount}
-                        updateHighestTile={(update) => {console.log(update)}}/>
+                        updateHighestTile={(update) => {}}/>
                 </div>
                 <div className="bottom">
                     <button className={"reset-board"}

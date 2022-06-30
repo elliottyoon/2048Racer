@@ -126,6 +126,8 @@ function getEmptySpaces(gameState) {
 /* 
  *  input: gs       - gameState
  *         gsSetter - (input) => TileContainer.state.gameState = input
+ *  
+ * output: bool - whether or not any changes were made
  *
  */
 function slideUp(gs, gsSetter) {
@@ -135,7 +137,9 @@ function slideUp(gs, gsSetter) {
     let changes = slideHelper(cols);
     if (changes.length > 0) {
         gsSetter(insertRandomTile(transpose(cols)));
+        return true;
     }
+    return false;
 }
 function slideLeft(gs, gsSetter) {
     let cols = [['','','',''],['','','',''],['','','',''],['','','','']];
@@ -147,7 +151,9 @@ function slideLeft(gs, gsSetter) {
     let changes = slideHelper(cols);
     if (changes.length > 0) {
         gsSetter(insertRandomTile(cols));
+        return true;
     }
+    return false;
 }
 function slideDown(gs, gsSetter) {
     let cols = transpose(gs);
@@ -160,7 +166,9 @@ function slideDown(gs, gsSetter) {
             cols[c].reverse();
         }
         gsSetter(insertRandomTile(transpose(cols)));
+        return true;
     }
+    return false;
 }
 function slideRight(gs, gsSetter) {
     let cols = [['','','',''],['','','',''],['','','',''],['','','','']];
@@ -178,7 +186,9 @@ function slideRight(gs, gsSetter) {
             cols[c].reverse()
         }
         gsSetter(insertRandomTile(cols));
+        return true;
     }
+    return false;
 }
 function slideInDirection(gs, gsSetter, dir) {
     switch (dir) {
