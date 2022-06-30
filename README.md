@@ -1,4 +1,4 @@
-Race your friends to the 2048 tile!
+Race your friends to the 2048 tile or watch an AI play it for you!
 
 ---
 
