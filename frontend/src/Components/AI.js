@@ -20,6 +20,7 @@ class AI extends React.Component {
 
         this.state = {
             highestTile: 0,
+            gameLost: false,
             thinkTime: 1000 // in milliseconds
         }
 
@@ -32,11 +33,14 @@ class AI extends React.Component {
         this.slideDown = this.slideDown.bind(this);
         this.slideLeft = this.slideLeft.bind(this);
 
+        this.eval = this.eval.bind(this);
         this.smoothness = this.smoothness.bind(this);
         this.monotonicity = this.monotonicity.bind(this);
 
         this.search = this.search.bind(this);
         this.iterativeDeep = this.iterativeDeep.bind(this);
+
+        this.run = this.run.bind(this);
 
         // newGameState => sets TileContainer.state.gameState = newGameState
         this.setGameState = null;
@@ -55,7 +59,7 @@ class AI extends React.Component {
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
                 3. Free tiles: penalty for having too few tiles 
 
-            TODO: implement islands dfs function in helpers
+            TODO: figure out why move() modifies actual board render
                 fix reset board button
     */
 
@@ -220,134 +224,130 @@ class AI extends React.Component {
         return Math.max(totals[0], totals[1]) + Math.max(totals[2], totals[3]);
     }
 
-    // alpha-beta dfs
-    search(depth, alpha, beta, positions, cutoffs) {
-        let gs = this.getGameState();
-        
-        function helper(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
-            let bestScore;
-            let bestMove = -1;
-            let res;
+    // alpha-beta dfs 
+    search(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
+        let bestScore;
+        let bestMove = -1;
+        let res;
 
-            // MAX player, aka user
-            if (playerTurn) {
-                bestScore = alpha;
-                for (let dir in [0, 1, 2, 3]) {
-                    let newGameState = move(gs, dir);
-                    // if move actually changes gameState
-                    if (newGameState != false) {
-                        positions++;
+        // MAX player, aka user
+        if (playerTurn) {
+            bestScore = alpha;
 
-                        if (maxValue(newGameState) == 2048) {
-                            return {
-                                move: dir,
-                                score: 69420,
-                                positions: positions,
-                                cutoff: cutoffs
-                            };
-                        }
-                        if (depth == 0) {
-                            res = {
-                                move: dir,
-                                score: eval(newGameState)
-                            }
-                        } else {
-                            // AI's turn
-                            res = helper(depth-1, bestScore, beta, positions, cutoffs, false, newGameState);
-                            // AI winning condition
-                            if (res.score > 9900) {
-                                res.score--; 
-                            }
-                            positions = res.positions;
-                            cutoffs = res.cutoffs;
-                        }
-
-                        // updates most favorable move for player
-                        if (res.score > bestScore) {
-                            bestScore = res.score;
-                            bestMove = dir;
-                        }
-                        // prunes unfavorable branch
-                        if (bestScore > beta) {
-                            cutoffs++;
-                            return {
-                                move: bestMove,
-                                score: beta,
-                                positions: positions,
-                                cutoffs: cutoffs
-                            };
-                        }
-                    }
-                }
-            }
-            // MIN player, aka computer placing tiles
-            else {
-                bestScore = beta;
-                // place 2, 4 in each cell and measure impact on player 
-                let candidates = [];
-                let availableSpaces = emptySpacesAvailable(); // [[x,y], ...]
-                let scores = {
-                    2: [],
-                    4: []
-                }
-                for (let val in scores) {
-                    for (let i in availableSpaces) {
-                        scores[val].push(null);
-                        let space = availableSpaces[i];
-                        let tempGameState = gs;
-                        tempGameState[space[0], space[1]] = val;
-                        // add 'annoyingness' to scores object
-                        scores[val][i] = -this.smoothness(tempGameState) + numIslands();
-                    }
-                }
-
-                // pick most annoying move
-                let maxScore = Math.max(Math.max.apply(null, scores[2]), Math.max.apply(null, scores[4]));
-                for (let val in scores) { // 2, 4
-                    for (let i = 0; i < scores[val].length; i++) {
-                        if (scores[val][i] == maxScore) {
-                            candidates.push({
-                                position: availableSpaces[i], 
-                                value: val
-                            })
-                        }
-                    }
-                }
-
-                // search on each candidate
-                for (let i = 0; i < candidates.length; i++) {
-                    let pos = candidates[i].position;
-                    let val = candidates[i].value;
-                    let newGameState = gs;
-
-                    newGameState[pos[0], pos[1]] = val;
+            for (let dir = 0; dir < 4; dir++) {
+                let newGameState = move(gs, dir);
+                // if move actually changes gameState
+                if (newGameState != false) {
                     positions++;
-                    res = helper(depth, alpha, bestScore, positions, cutoffs, true, newGameState);
-                    positions = res.positions;
-                    cutoffs = res.cutoffs;
-
-                    if (res.score < bestScore) {
-                        bestScore = res.score;
+                    if (maxValue(newGameState) == 2048) {
+                        return {
+                            move: dir,
+                            score: 69420,
+                            positions: positions,
+                            cutoff: cutoffs
+                        };
                     }
-                    if (bestScore < alpha) {
+                    if (depth == 0) {
+                        res = {
+                            move: dir,
+                            score: this.eval(newGameState)
+                        }
+                    } else {
+                        // AI's turn
+                        res = this.search(depth-1, bestScore, beta, positions, cutoffs, false, newGameState);
+                        // AI winning condition
+                        if (res.score > 9900) {
+                            res.score--; 
+                        }
+                        positions = res.positions;
+                        cutoffs = res.cutoffs;
+                    }
+
+                    // updates most favorable move for player
+                    if (res.score > bestScore) {
+                        bestScore = res.score;
+                        bestMove = dir;
+                    }
+                    console.log(res);
+                    // prunes unfavorable branch
+                    if (bestScore > beta) {
                         cutoffs++;
                         return {
-                            move: null,
-                            score: alpha,
+                            move: bestMove,
+                            score: beta,
                             positions: positions,
                             cutoffs: cutoffs
-                        }
+                        };
                     }
                 }
             }
-            return {
-                move: bestMove,
-                score: bestScore,
-                positions: positions,
-                cutoffs: cutoffs
-            }
         }
-        return helper(depth, alpha, beta, positions, cutoffs, true, gs);
+        // MIN player, aka computer placing tiles
+        // else {
+        //     bestScore = beta;
+        //     // place 2, 4 in each cell and measure impact on player 
+        //     let candidates = [];
+        //     let availableSpaces = emptySpacesAvailable(gs); // [[x,y], ...]
+        //     let scores = {
+        //         2: [],
+        //         4: []
+        //     }
+        //     for (let val in scores) {
+        //         for (let i in availableSpaces) {
+        //             scores[val].push(null);
+        //             let space = availableSpaces[i];
+        //             let tempGameState = gs;
+        //             tempGameState[space[0]][space[1]] = val;
+        //             // add 'annoyingness' to scores object
+        //             scores[val][i] = -this.smoothness(tempGameState) + numIslands(tempGameState);
+        //         }
+        //     }
+
+        //     // pick most annoying move
+        //     let maxScore = Math.max(Math.max.apply(null, scores[2]), Math.max.apply(null, scores[4]));
+        //     for (let val in scores) { // 2, 4
+        //         for (let i = 0; i < scores[val].length; i++) {
+        //             if (scores[val][i] == maxScore) {
+        //                 candidates.push({
+        //                     position: availableSpaces[i], 
+        //                     value: val
+        //                 })
+        //             }
+        //         }
+        //     }
+
+        //     // search on each candidate
+        //     for (let i = 0; i < candidates.length; i++) {
+        //         let pos = candidates[i].position;
+        //         let val = candidates[i].value;
+        //         let newGameState = gs;
+
+        //         newGameState[pos[0]][pos[1]] = val;
+        //         positions++;
+        //         res = this.search(depth, alpha, bestScore, positions, cutoffs, true, newGameState);
+        //         positions = res.positions;
+        //         cutoffs = res.cutoffs;
+
+        //         if (res.score < bestScore) {
+        //             bestScore = res.score;
+        //         }
+        //         if (bestScore < alpha) {
+        //             cutoffs++;
+        //             return {
+        //                 move: null,
+        //                 score: alpha,
+        //                 positions: positions,
+        //                 cutoffs: cutoffs
+        //             }
+        //         }
+        //     }
+        // }
+        return {
+            move: bestMove,
+            score: bestScore,
+            positions: positions,
+            cutoffs: cutoffs
+        }
     }
 
     // iterative deepening over alpha-beta search
@@ -356,21 +356,42 @@ class AI extends React.Component {
         let depth = 0;
         let best;
         do {
-            let newBest = this.search(depth, -10000, 69420, 0, 0);
+            let newBest = this.search(depth, -10000, 69420, 0, 0, true, this.getGameState());
+
             if (newBest.move == -1) {
-                break;
+                // break;
             } else {
                 best = newBest;
             }
             depth++;
-        } while ((new Date()).getTime() - startTime < this.state.thinkTime);
+
+        // } while ((new Date()).getTime() - startTime < this.state.thinkTime);
+        } while( depth < 1 );
         return best;
+    }
+
+    run() {
+        let best = this.iterativeDeep();
+        // TODO finish this
+
     }
 
     /* ====================================== Lifecycle Methods */
 
     componentDidMount() {
         this.slideRight();
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
         this.slideUp();
         this.slideDown();
         this.slideRight();
@@ -382,8 +403,8 @@ class AI extends React.Component {
         this.slideUp();
         this.slideDown();
         this.slideRight();
-        let gs = this.getGameState();
-        console.log(this.eval(gs));
+        console.log(move(this.getGameState(), 0))
+        console.log(this.iterativeDeep());
 
     }
 

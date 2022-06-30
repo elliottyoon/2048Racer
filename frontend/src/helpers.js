@@ -175,8 +175,24 @@ function slideRight(gs, gsSetter) {
 /* ************ AI-specific helpers ************ */
 
 function numIslands(gameState) {
-    console.log('implement this function');
-    return 0;
+    let gs = gameState.slice();
+    console.log(gs);
+    let count = 0;
+    function dfs(i, j) {
+        if (i < 0 || j < 0 || i > 3 || j > 3 || gs[i][j] == '') {
+            return 0;
+        }
+        gs[i][j] = 0;
+        return 1 + dfs(i+1, j) + dfs(i-1, j) + dfs(i, j+1) + dfs(i, j-1);
+    }
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (dfs(i, j) > 0) {
+                count++;
+            }
+        }
+    }
+    return count;
 }
 
 function maxValue(gameState) {
@@ -255,10 +271,11 @@ function insertRandomTile(arr) {
 }
 
 // returns gameState after desired move, or false if no change
-function move(gs, dir) {
+function move(gameState, dir) {
     // dir map: 0 -> up, 1 -> right, 2 -> down, 3 -> left
     let cols;
     let changes;
+    let gs = gameState.slice();
 
     switch (dir) {
         case 0: // up
@@ -269,8 +286,9 @@ function move(gs, dir) {
             }
             return gs;
         case 1: // right
-            let cols = gs;
+            cols = gs;
             for (let c in cols) {
+                console.log(cols)
                 cols[c].reverse();
             }
             changes = slideHelper(cols);
@@ -296,7 +314,7 @@ function move(gs, dir) {
             return gs;
         case 3: // left
             cols = gs;
-            let changes = slideHelper(cols);
+            changes = slideHelper(cols);
             if (changes.length > 0) {
                 return insertRandomTile(cols);
             }
