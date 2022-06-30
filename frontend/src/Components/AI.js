@@ -38,6 +38,7 @@ class AI extends React.Component {
         this.monotonicity = this.monotonicity.bind(this);
 
         this.search = this.search.bind(this);
+        this.getBestMove = this.getBestMove.bind(this);
         this.iterativeDeep = this.iterativeDeep.bind(this);
 
         this.run = this.run.bind(this);
@@ -268,7 +269,6 @@ class AI extends React.Component {
                         bestScore = res.score;
                         bestMove = dir;
                     }
-                    console.log(res);
                     // prunes unfavorable branch
                     if (bestScore > beta) {
                         cutoffs++;
@@ -350,6 +350,10 @@ class AI extends React.Component {
         }
     }
 
+    getBestMove() {
+        return this.iterativeDeep();
+    }
+
     // iterative deepening over alpha-beta search
     iterativeDeep() {
         let startTime = (new Date()).getTime(); 
@@ -366,7 +370,7 @@ class AI extends React.Component {
             depth++;
 
         // } while ((new Date()).getTime() - startTime < this.state.thinkTime);
-        } while( depth < 1 );
+        } while( depth < 2 );
         return best;
     }
 
@@ -379,32 +383,32 @@ class AI extends React.Component {
     /* ====================================== Lifecycle Methods */
 
     componentDidMount() {
-        this.slideRight();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        this.slideRight();
-        this.slideUp();
-        this.slideDown();
-        this.slideRight();
-        console.log(move(this.getGameState(), 0))
-        console.log(this.iterativeDeep());
+        // this.slideRight();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // this.slideRight();
+        // this.slideUp();
+        // this.slideDown();
+        // this.slideRight();
+        // console.log(move(this.getGameState(), 1))
+        console.log(this.getBestMove());
 
     }
 
@@ -422,7 +426,8 @@ class AI extends React.Component {
                 <div className="bottom">
                     <button className={"reset-board"}
                         tabIndex={"0"}
-                        onClick={this.boardSetter}
+                        //onClick={this.boardSetter}
+                        onClick={() => {console.log(move(this.getGameState(),1))}}
                         aria-label="Reset board"
                         data-balloon-pos="down">
                     <FontAwesomeIcon icon={ faRedo } size="lg"/>

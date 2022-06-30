@@ -175,8 +175,12 @@ function slideRight(gs, gsSetter) {
 /* ************ AI-specific helpers ************ */
 
 function numIslands(gameState) {
-    let gs = gameState.slice();
-    console.log(gs);
+    let gs = [['','','',''],['','','',''],['','','',''],['','','','']];
+    for (let i=0; i<4; i++) {
+        for (let j=0; j<4;j++) {
+            gs[i][j] = gameState[i][j];
+        }
+    }
     let count = 0;
     function dfs(i, j) {
         if (i < 0 || j < 0 || i > 3 || j > 3 || gs[i][j] == '') {
@@ -275,7 +279,13 @@ function move(gameState, dir) {
     // dir map: 0 -> up, 1 -> right, 2 -> down, 3 -> left
     let cols;
     let changes;
-    let gs = gameState.slice();
+    // gameState.slice() will return a new array consisting of pointers to the subarrays. not good!
+    let gs = [['','','',''],['','','',''],['','','',''],['','','','']];
+    for (let i=0; i<4; i++) {
+        for (let j=0; j<4; j++) {
+            gs[i][j] = gameState[i][j];
+        }
+    }
 
     switch (dir) {
         case 0: // up
@@ -288,10 +298,9 @@ function move(gameState, dir) {
         case 1: // right
             cols = gs;
             for (let c in cols) {
-                console.log(cols)
                 cols[c].reverse();
             }
-            changes = slideHelper(cols);
+            changes = slideHelper(gs);
             if (changes.length > 0) {
                 for (let c in cols) {
                     cols[c].reverse()

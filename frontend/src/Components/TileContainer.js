@@ -98,6 +98,7 @@ class TileContainer extends React.Component {
         return this.state.gameState;
     }
     setBoard(newGameState) {
+        console.log('whatchu doin');
         this.setState({
             gameState: newGameState
         });
@@ -255,7 +256,9 @@ class TileContainer extends React.Component {
     }
     
     render() {
-        const content = [];
+        console.log('fred');
+        
+        let content = [];
         let temp = '';
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
