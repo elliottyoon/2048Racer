@@ -174,6 +174,23 @@ function slideRight(gs, gsSetter) {
 
 /* ************ AI-specific helpers ************ */
 
+function numIslands(gameState) {
+    console.log('implement this function');
+    return 0;
+}
+
+function maxValue(gameState) {
+    let max = 0;
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (gameState[i][j] != '' && gameState[i][j] > max) {
+                max = gameState[i][j];
+            }
+        }
+    }
+    return max;
+}
+
 function numEmptySpacesAvailable(gameState) {
     let count = 0;
 
@@ -185,6 +202,18 @@ function numEmptySpacesAvailable(gameState) {
         }
     }
     return count;
+}
+
+function emptySpacesAvailable(gameState) {
+    let spaces = [];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (gameState[i][j] == '') {
+                spaces.push([i, j]);
+            }
+        }
+    }
+    return spaces;
 }
 
 function adjacentTileMatchesAvailable(gameState) {
@@ -225,14 +254,68 @@ function insertRandomTile(arr) {
     return tempGameState;
 }
 
+// returns gameState after desired move, or false if no change
+function move(gs, dir) {
+    // dir map: 0 -> up, 1 -> right, 2 -> down, 3 -> left
+    let cols;
+    let changes;
+
+    switch (dir) {
+        case 0: // up
+            cols = transpose(gs);
+            changes = slideHelper(cols);
+            if (changes.length > 0) {
+                return insertRandomTile(transpose(cols));
+            }
+            return gs;
+        case 1: // right
+            let cols = gs;
+            for (let c in cols) {
+                cols[c].reverse();
+            }
+            changes = slideHelper(cols);
+            if (changes.length > 0) {
+                for (let c in cols) {
+                    cols[c].reverse()
+                }
+                return insertRandomTile(cols);
+            }
+            return gs;
+        case 2: // down
+            cols = transpose(gs);
+            for (let c in cols) {
+                cols[c].reverse();
+            }
+            changes = slideHelper(cols);
+            if (changes.length > 0) {
+                for (let c in cols) {
+                    cols[c].reverse();
+                }
+                return insertRandomTile(transpose(cols));
+            }
+            return gs;
+        case 3: // left
+            cols = gs;
+            let changes = slideHelper(cols);
+            if (changes.length > 0) {
+                return insertRandomTile(cols);
+            }
+            return gs;
+    }
+}
+
 
 
 export {
     adjacentTileMatchesAvailable, 
     generateRandomTile, 
+    maxValue,
     numEmptySpacesAvailable, 
+    emptySpacesAvailable,
     transpose, 
     slideHelper,
+    move,
+    numIslands,
     slideUp,
     slideDown,
     slideLeft,

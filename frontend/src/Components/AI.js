@@ -5,8 +5,10 @@ import BoardContainer from './BoardContainer';
 import TileContainer from './TileContainer';
 
 import {
-    slideUp, slideRight, slideDown, slideLeft,
-    transpose, slideHelper, numEmptySpacesAvailable, adjacentTileMatchesAvailable 
+    slideUp, slideRight, slideDown, slideLeft, move,
+    transpose, slideHelper, maxValue, numIslands, 
+    numEmptySpacesAvailable, emptySpacesAvailable,
+    adjacentTileMatchesAvailable 
 } from '../helpers.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,11 +20,23 @@ class AI extends React.Component {
 
         this.state = {
             highestTile: 0,
+            thinkTime: 1000 // in milliseconds
         }
 
         this.renderSquare = this.renderSquare.bind(this);
         this.updateHighestTile = this.updateHighestTile.bind(this);
         this.onBoardMount = this.onBoardMount.bind(this);
+
+        this.slideUp = this.slideUp.bind(this);
+        this.slideRight = this.slideRight.bind(this);
+        this.slideDown = this.slideDown.bind(this);
+        this.slideLeft = this.slideLeft.bind(this);
+
+        this.smoothness = this.smoothness.bind(this);
+        this.monotonicity = this.monotonicity.bind(this);
+
+        this.search = this.search.bind(this);
+        this.iterativeDeep = this.iterativeDeep.bind(this);
 
         // newGameState => sets TileContainer.state.gameState = newGameState
         this.setGameState = null;
@@ -37,13 +51,15 @@ class AI extends React.Component {
 
     outline: Minimax search with alpha-beta pruning. Static evaluation function involves
                 1. Monotonicity: values of the tiles are either increasing or decreasing along 
-                   both the left/right and up/down directions
+                   both the left/right and up/down dirs
                 2. Smoothness: value difference between neighboring tiles, trying to minimize this count 
-                3. Free tiles: penalty for having too few tiles
+                3. Free tiles: penalty for having too few tiles 
 
-    TODO: export the slideAction: gameState -> changes functions to helpers.js
+            TODO: implement islands dfs function in helpers
+                fix reset board button
     */
 
+    /* ====================================== Interface Methods */
     renderSquare(i) {
         return <Square />;
     }
@@ -63,6 +79,312 @@ class AI extends React.Component {
         this.setGameState = importFuncs[0];
         this.getGameState = importFuncs[1];
         this.resetGameState = importFuncs[2];
+    }
+
+    slideUp() {
+        slideUp(this.getGameState(), this.setGameState);
+    }
+    slideRight() {
+        slideRight(this.getGameState(), this.setGameState);
+    }
+    slideDown() {
+        slideDown(this.getGameState(), this.setGameState);
+    }
+    slideLeft() {
+        slideLeft(this.getGameState(), this.setGameState);
+    }
+
+    /* ====================================== AI Methods */
+
+    // static evaluation function
+    eval(gameState) {
+        const numEmptyCells = numEmptySpacesAvailable(gameState);
+        // parameter weights, may need additional fitting
+        var smoothWeight = 0.1,
+            monotonicityWeight   = 1.0,
+            emptyWeight  = 2.7,
+            maxWeight    = 1.0;
+
+        return smoothWeight       * this.smoothness(gameState) 
+            +  monotonicityWeight * this.monotonicity(gameState) 
+            +  emptyWeight        * Math.log(numEmptyCells)
+            +  maxWeight          * maxValue(gameState);
+
+    }
+
+    // sums pairwise difference between neighboring tiles 
+    // (in log spaces to convey # of merges that need to occur to merge the two)
+    smoothness(gameState) {
+        const gs = gameState;
+        const gsT = transpose(gs);
+        let smoothness = 0;
+
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                if (gs[i][j] != '') {
+                    const val = Math.log(gs[i][j]) / Math.log(2);
+
+                    // horizontal dir
+                    let next = j + 1;
+                    while (next < 4 && gs[i][next] == '') {
+                       next++;
+                    }
+                    if (next < 4) {
+                        let targetVal = Math.log(gs[i][next]) / Math.log(2);
+                        smoothness -= Math.abs(val - targetVal);
+                    }
+
+                    // vertical dir
+                    next = j + 1
+                    while (next < 4 && gsT[i][next] == '') {
+                        next++;
+                    }
+                    if (next < 4) {
+                        let targetVal = Math.log(gsT[i][next]) / Math.log(2);
+                        smoothness -= Math.abs(val - targetVal);
+                    }
+
+                }
+            }
+        }
+        return smoothness;
+
+    }
+    // measure of whether the values of the tiles are strictly increasing or decreasing in left/right and up/down dirs
+    monotonicity(gs) {
+        /* 
+        totals = [ 
+            strictly decreasing in up/down dir weight, 
+            strictly increasing in up/down dir weight,
+            strictly decreasing in right/left dir weight,
+            strictly increasing in right/left dir weight
+        ] 
+        */
+        let totals = [0, 0, 0, 0]; 
+        // up/down
+        for (let i = 0; i < 4; i++) {
+            // updates increasing and decreasing weights
+            let curr = 0;
+            let next = 1;
+            while (next < 4) {
+                // traverses through row until finds nonempty tile
+                while (next < 4 && gs[i][next] == '') {
+                    next++;
+                }
+                // all tiles in row are empty
+                if (next == 4) next = 3;
+                // getting what power of 2 the current tile value is (sets 0 if empty)
+                let currentVal = (gs[i][curr] != '') ? Math.log(gs[i][curr]) / Math.log(2) : 0;
+                let nextVal = (gs[i][next] != '') ? Math.log(gs[i][next]) / Math.log(2) : 0;
+                // adds to strictly decreasing weight
+                if (currentVal > nextVal) {
+                    totals[0] += nextVal - currentVal;
+                } else if (currentVal < nextVal) {
+                    totals[1] += currentVal - nextVal;
+                }
+                
+                curr = next;
+                next++;
+            }
+        }
+
+        // left/right
+        for (let j = 0; j < 4; j++) {
+            // updates increasing and decreasing weights
+            let curr = 0;
+            let next = 1;
+            while (next < 4) {
+                // traverses through row until finds nonempty tile
+                while (next < 4 && gs[next][j] == '') {
+                    next++;
+                }
+                // all tiles in row are empty
+                if (next >= 4) next--;
+                // getting what power of 2 the current tile value is (sets 0 if empty)
+                let currentVal = (gs[curr][j] != '') ? Math.log(gs[curr][j]) / Math.log(2) : 0;
+                let nextVal = (gs[curr][j] != '') ? Math.log(gs[curr][j]) / Math.log(2) : 0;
+                // adds to strictly decreasing weight
+                if (currentVal > nextVal) {
+                    totals[2] += nextVal - currentVal;
+                } else if (currentVal < nextVal) {
+                    totals[3] += currentVal - nextVal;
+                }
+                
+                curr = next;
+                next++;
+            }
+        }
+
+        // since we are trying to maximize this value, we return the worst case scenario 
+        // (expect the worst, hope for the best!)
+        return Math.max(totals[0], totals[1]) + Math.max(totals[2], totals[3]);
+    }
+
+    // alpha-beta dfs
+    search(depth, alpha, beta, positions, cutoffs) {
+        let gs = this.getGameState();
+        
+        function helper(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
+            let bestScore;
+            let bestMove = -1;
+            let res;
+
+            // MAX player, aka user
+            if (playerTurn) {
+                bestScore = alpha;
+                for (let dir in [0, 1, 2, 3]) {
+                    let newGameState = move(gs, dir);
+                    // if move actually changes gameState
+                    if (newGameState != false) {
+                        positions++;
+
+                        if (maxValue(newGameState) == 2048) {
+                            return {
+                                move: dir,
+                                score: 69420,
+                                positions: positions,
+                                cutoff: cutoffs
+                            };
+                        }
+                        if (depth == 0) {
+                            res = {
+                                move: dir,
+                                score: eval(newGameState)
+                            }
+                        } else {
+                            // AI's turn
+                            res = helper(depth-1, bestScore, beta, positions, cutoffs, false, newGameState);
+                            // AI winning condition
+                            if (res.score > 9900) {
+                                res.score--; 
+                            }
+                            positions = res.positions;
+                            cutoffs = res.cutoffs;
+                        }
+
+                        // updates most favorable move for player
+                        if (res.score > bestScore) {
+                            bestScore = res.score;
+                            bestMove = dir;
+                        }
+                        // prunes unfavorable branch
+                        if (bestScore > beta) {
+                            cutoffs++;
+                            return {
+                                move: bestMove,
+                                score: beta,
+                                positions: positions,
+                                cutoffs: cutoffs
+                            };
+                        }
+                    }
+                }
+            }
+            // MIN player, aka computer placing tiles
+            else {
+                bestScore = beta;
+                // place 2, 4 in each cell and measure impact on player 
+                let candidates = [];
+                let availableSpaces = emptySpacesAvailable(); // [[x,y], ...]
+                let scores = {
+                    2: [],
+                    4: []
+                }
+                for (let val in scores) {
+                    for (let i in availableSpaces) {
+                        scores[val].push(null);
+                        let space = availableSpaces[i];
+                        let tempGameState = gs;
+                        tempGameState[space[0], space[1]] = val;
+                        // add 'annoyingness' to scores object
+                        scores[val][i] = -this.smoothness(tempGameState) + numIslands();
+                    }
+                }
+
+                // pick most annoying move
+                let maxScore = Math.max(Math.max.apply(null, scores[2]), Math.max.apply(null, scores[4]));
+                for (let val in scores) { // 2, 4
+                    for (let i = 0; i < scores[val].length; i++) {
+                        if (scores[val][i] == maxScore) {
+                            candidates.push({
+                                position: availableSpaces[i], 
+                                value: val
+                            })
+                        }
+                    }
+                }
+
+                // search on each candidate
+                for (let i = 0; i < candidates.length; i++) {
+                    let pos = candidates[i].position;
+                    let val = candidates[i].value;
+                    let newGameState = gs;
+
+                    newGameState[pos[0], pos[1]] = val;
+                    positions++;
+                    res = helper(depth, alpha, bestScore, positions, cutoffs, true, newGameState);
+                    positions = res.positions;
+                    cutoffs = res.cutoffs;
+
+                    if (res.score < bestScore) {
+                        bestScore = res.score;
+                    }
+                    if (bestScore < alpha) {
+                        cutoffs++;
+                        return {
+                            move: null,
+                            score: alpha,
+                            positions: positions,
+                            cutoffs: cutoffs
+                        }
+                    }
+                }
+            }
+            return {
+                move: bestMove,
+                score: bestScore,
+                positions: positions,
+                cutoffs: cutoffs
+            }
+        }
+        return helper(depth, alpha, beta, positions, cutoffs, true, gs);
+    }
+
+    // iterative deepening over alpha-beta search
+    iterativeDeep() {
+        let startTime = (new Date()).getTime(); 
+        let depth = 0;
+        let best;
+        do {
+            let newBest = this.search(depth, -10000, 69420, 0, 0);
+            if (newBest.move == -1) {
+                break;
+            } else {
+                best = newBest;
+            }
+            depth++;
+        } while ((new Date()).getTime() - startTime < this.state.thinkTime);
+        return best;
+    }
+
+    /* ====================================== Lifecycle Methods */
+
+    componentDidMount() {
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
+        this.slideRight();
+        this.slideUp();
+        this.slideDown();
+        this.slideRight();
+        let gs = this.getGameState();
+        console.log(this.eval(gs));
+
     }
 
 
