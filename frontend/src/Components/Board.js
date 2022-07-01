@@ -34,7 +34,6 @@ class Board extends React.Component {
       timeStopped: false,
       highestTile: 0,
       chatHistory: [],
-      modal: null,
     }
 
     this.send = this.send.bind(this);
@@ -47,7 +46,8 @@ class Board extends React.Component {
     this.updateHighestTile = this.updateHighestTile.bind(this);
 
     this.startTimeForAll = this.startTimeForAll.bind(this);
-    
+    this.hideModals = this.hideModals.bind(this);
+
     this.timeStarter = null;
     this.timeStopper = null;
     
@@ -66,18 +66,6 @@ class Board extends React.Component {
     return <Square />;
   }
 
-  renderModal(type) {
-    if (!type) {
-      return;
-    }
-    if (type == "win") {
-      return <Modal value="Cowabunga you won!" id="game-won"/>;
-    }
-    if (type = "lose") {
-      return <Modal value="Drip drop you flop" id="game-lost"/>;
-    }
-  }
-
   onTimerMount(setter) {
     this.timeStopper = setter[0];
     this.timeStarter = setter[1];
@@ -89,9 +77,6 @@ class Board extends React.Component {
   }
 
   startTimeForAll() {
-    this.setState({
-      modal: null,
-    })
     if (this.isConnected) {
       startServerTime();
     } else {
@@ -106,11 +91,19 @@ class Board extends React.Component {
   }
   resetBoard() {
     this.resetGameState();
-    this.setState({
-      modal: null,
-    })
+    this.hideModals();
   }
   
+  hideModals() {
+    let winModal = document.querySelector("#game-won");
+    let loseModal = document.querySelector("game-lose");
+    if (!winModal.classList.contains("visually-hidden")) {
+      winModal.classList.add("visually-hidden");
+    }
+    if (!loseModal.classList.contains("visually-hidden")) {
+      loseModal.classList.add("visually-hidden");
+    }
+  }
   updateHighestTile(update) {
     let stateChanges = {
       highestTile: update,
@@ -119,8 +112,9 @@ class Board extends React.Component {
     // winning condition
     if (update == 2048) {
       this.callStopTime();
-      sendMsg('User Won');
-      stateChanges["modal"] = "win";
+      sendMsg('User Won'); // keep in mind that this will break the DOM if client is attempting to connect to ws server
+      let modal = document.querySelector("#game-won")
+      modal.classList.remove("visually-hidden");
     }
 
     this.setState(stateChanges);
@@ -141,9 +135,7 @@ class Board extends React.Component {
         this.callStopTime();
         // and you didn't win
         if (!this.state.modal) {
-          this.setState({
-            modal: "lose",
-          })
+          document.querySelector("#game-lost").classList.remove("visually-hidden");
         }
         console.log(messageBody);
       } else {
@@ -172,6 +164,7 @@ class Board extends React.Component {
   
 
   render() {
+
     let divColor = 'grey';
     if (this.state.highestTile > 64) {
       divColor = getComputedStyle(document.documentElement).getPropertyValue(`--color-${this.state.highestTile}x`);
@@ -198,7 +191,8 @@ class Board extends React.Component {
             <ChatHistory chatHistory={this.state.chatHistory} />
           </aside>
           <main>
-            { this.renderModal(this.state.modal) }
+            <Modal value="Cowabunga you won!" id="game-won"/>
+            <Modal value="Better luck next time!" id="game-lost"/>
             <BoardContainer renderSquare={this.renderSquare}/>
             <TileContainer 
                 highestTile={this.state.highestTile}

@@ -29,8 +29,6 @@ class TileContainer extends React.Component {
             tileFontSize: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size'))
         }
 
-        this.highlightedTile = null;
-
         this.getBoard = this.getBoard.bind(this);
         this.setBoard = this.setBoard.bind(this);
         this.resetBoard = this.resetBoard.bind(this);
@@ -184,6 +182,9 @@ class TileContainer extends React.Component {
         let fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size');
         let styles = {};
 
+        let willAddShadow = false;
+        let boxShadow = "";
+
         if (val > 4) {
             color = '#f9f6f2';
         }
@@ -199,38 +200,29 @@ class TileContainer extends React.Component {
             }
 
         } else {
-            // removes highlight from current emphasized tile
-            if (this.highlightedTile !== null) {
-                try {
-                    document.getElementById(this.highlightedTile).style.removeProperty('box-shadow')
-                }
-                catch {
-                    console.log('Error finding tile to remove highlighting');
-                }
-                
+            if (val >= this.props.highestTile) {
+                boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
+                willAddShadow = true;
             }
-            
-            this.highlightedTile = 'tile-'+ i + "-" + j;
-            let boxShadow = '0 0 30px 10px rgb(243 215 116 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%)';
             switch (val) {
                 case 128:
                     fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
                     break;
                 case 256:
                     fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
-                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 32%), inset 0 0 0 1px rgb(255 255 255 / 19%)';
+                    if (willAddShadow) boxShadow = '0 0 30px 10px rgb(243 215 116 / 32%), inset 0 0 0 1px rgb(255 255 255 / 19%)';
                     break;
                 case 512:
                     fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
-                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 40%), inset 0 0 0 1px rgb(255 255 255 / 24%)';
+                    if (willAddShadow) boxShadow = '0 0 30px 10px rgb(243 215 116 / 40%), inset 0 0 0 1px rgb(255 255 255 / 24%)';
                     break;
                 case 1024:
                     fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-4digit');
-                    boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
+                    if (willAddShadow) boxShadow = '0 0 30px 10px rgb(243 215 116 / 48%), inset 0 0 0 1px rgb(255 255 255 / 29%)';
                     break;
                 case 2048:
                     fontSize = getComputedStyle(document.documentElement).getPropertyValue('--tile-font-size-3digit');
-                    // boxShadow = ...
+                    // if (willAddShadow) boxShadow = '0 0 30px 10px rgb(150 250 250 / 48%), inset 0 0 0 1px rgb(255 255 255 / 34%)';
                     break;
             }
 

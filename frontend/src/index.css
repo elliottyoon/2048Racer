@@ -241,7 +241,13 @@ h1.title {
   font-size: var(--tile-font-size);
   font-weight: bold;
   z-index: 100;
-  animation: fade-in 800ms ease 1200ms;
+  /* animation: fadeIn 800ms ease 1200ms; */
+  transition: all 1s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 .inlineIcon {
@@ -278,6 +284,14 @@ h1.title {
   font-size: 10px;
 
 }
+
+.hidden {
+  display: none;
+}
+.visually-hidden {
+  opacity: 0;
+}
+
 
 /* ======== Privacy Policy ============= */
 .info {
