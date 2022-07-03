@@ -25,11 +25,11 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 	client.Read()
 }
 
-func setupRoutes(mux *http.ServeMux) {
+func setupRoutes() {
 	pool := websocket.NewPool()
 	go pool.Start()
 
-	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
 	})
 }
@@ -37,7 +37,6 @@ func setupRoutes(mux *http.ServeMux) {
 func main() {
 	fmt.Println("2048 Racing App v0.01")
 
-	mux := http.NewServeMux()
-	setupRoutes(mux)
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	setupRoutes()
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
