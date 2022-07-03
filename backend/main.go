@@ -33,7 +33,7 @@ func setupRoutes() {
 		fmt.Fprintf(w, "Hello World")
 	})
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/wss", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
 	})
 }
@@ -42,5 +42,6 @@ func main() {
 	fmt.Println("2048 Racing App v0.01")
 
 	setupRoutes()
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// GET CERT.PEM AND CERT.KEY
+	log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "cert.key", nil))
 }
