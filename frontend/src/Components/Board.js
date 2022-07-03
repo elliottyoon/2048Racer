@@ -77,6 +77,7 @@ class Board extends React.Component {
   }
 
   startTimeForAll() {
+    startServerTime();
     if (this.isConnected) {
       startServerTime();
     } else {
@@ -96,7 +97,9 @@ class Board extends React.Component {
   
   hideModals() {
     let winModal = document.querySelector("#game-won");
-    let loseModal = document.querySelector("game-lose");
+    let loseModal = document.querySelector("#game-lost");
+
+    console.log(loseModal);
     if (!winModal.classList.contains("visually-hidden")) {
       winModal.classList.add("visually-hidden");
     }
@@ -127,14 +130,15 @@ class Board extends React.Component {
       let messageBody = JSON.parse(msg.data).body;
 
       if (messageBody.includes("StartTime")) {
-        this.timeStarter(Number(messageBody.slice(11)))
+        const utcStartTime = Number(messageBody.slice(11));
+        this.timeStarter(utcStartTime)
         this.resetBoard();
         messageBody = "Starting race..."
       }
       if (messageBody.includes("won")) {
         this.callStopTime();
         // and you didn't win
-        if (!this.state.modal) {
+        if (this.state.highestTile < 2048) {
           document.querySelector("#game-lost").classList.remove("visually-hidden");
         }
         console.log(messageBody);
@@ -150,10 +154,10 @@ class Board extends React.Component {
 
     // change start button text based on singleplayer or multiplayer mode
     let btn = document.querySelector("#start-button");
-    const isConnected = this.isConnected;
+    //const isConnected = this.isConnected;
 
     btn.addEventListener("mouseover", function() {
-      this.textContent = (isConnected == true ? "Multiplayer" : "Single player");
+      this.textContent = "Multiplayer"; //(isConnected == true ? "Multiplayer" : "Single player");
     })
     btn.addEventListener("mouseout", function() {
       this.textContent = "Start Race";
