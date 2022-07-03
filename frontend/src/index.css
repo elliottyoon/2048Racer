@@ -282,7 +282,9 @@ h1.title {
 
 .ChatHistory {
   font-size: 10px;
-
+  height: 70px;
+  width: 120px;
+  overflow-y: scroll;
 }
 
 .hidden {
@@ -290,6 +292,30 @@ h1.title {
 }
 .visually-hidden {
   opacity: 0;
+}
+
+/* ======== Privacy Policy ============= */
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: grey #2b2b2c; 
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #2b2b2c;
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: grey;
+  border-radius: 20px;
+  border: 3px solid #2b2b2c;
 }
 
 

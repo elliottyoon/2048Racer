@@ -3,6 +3,8 @@ import Tile from './Tile.js'
 import {slideUp, slideDown, slideLeft, slideRight,
         generateRandomTile } from '../helpers.js'
 
+import { ping } from '../api/index.js'
+
 /*
 
 * todo: 
@@ -38,6 +40,7 @@ class TileContainer extends React.Component {
  
         // arrow key functionality
         window.addEventListener('keydown', this.handleKeyPress)
+        window.addEventListener('click', ping);
 
         // add first two random tiles
         const rand1 = generateRandomTile(this.state.gameState);
@@ -126,6 +129,7 @@ class TileContainer extends React.Component {
 
     handleKeyPress(event) {
         const key = event.key;
+        ping();
 
         switch(key) {
             // up

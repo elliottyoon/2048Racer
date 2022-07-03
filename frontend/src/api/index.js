@@ -8,7 +8,7 @@ let connect = cb => {
     };
   
     socket.onmessage = msg => {
-      console.log(msg);
+      // console.log(msg);
       cb(msg);
     };
   
@@ -26,6 +26,11 @@ let sendMsg = msg => {
     socket.send(msg);
 };
 
+let ping = () => {
+  // prevent Websocket timeouts
+  socket.send("ping");
+}
+
 let startServerTime = () => {
   socket.send("Start Time");
 }
@@ -34,4 +39,4 @@ let getSocket = () => {
   return socket;
 }
 
-export { connect, sendMsg, startServerTime, getSocket };
+export { connect, sendMsg, startServerTime, getSocket, ping };

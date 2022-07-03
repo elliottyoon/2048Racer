@@ -98,8 +98,7 @@ class Board extends React.Component {
   hideModals() {
     let winModal = document.querySelector("#game-won");
     let loseModal = document.querySelector("#game-lost");
-
-    console.log(loseModal);
+ 
     if (!winModal.classList.contains("visually-hidden")) {
       winModal.classList.add("visually-hidden");
     }
@@ -129,27 +128,29 @@ class Board extends React.Component {
       // handles different messages
       let messageBody = JSON.parse(msg.data).body;
 
-      if (messageBody.includes("StartTime")) {
-        const utcStartTime = Number(messageBody.slice(11));
-        this.timeStarter(utcStartTime)
-        this.resetBoard();
-        messageBody = "Starting race..."
-      }
-      if (messageBody.includes("won")) {
-        this.callStopTime();
-        // and you didn't win
-        if (this.state.highestTile < 2048) {
-          document.querySelector("#game-lost").classList.remove("visually-hidden");
+      // TODO: standardize messges so people don't name themselves "StartTime" or something
+      if (messageBody != "ping") {
+        if (messageBody.includes("StartTime")) {
+          const utcStartTime = Number(messageBody.slice(11));
+          this.timeStarter(utcStartTime)
+          this.resetBoard();
+          messageBody = "Starting race..."
         }
-        console.log(messageBody);
-      } else {
-        console.log(messageBody);
+        if (messageBody.includes("won")) {
+          this.callStopTime();
+          // and you didn't win
+          if (this.state.highestTile < 2048) {
+            document.querySelector("#game-lost").classList.remove("visually-hidden");
+          }
+          console.log(messageBody);
+        } else {
+          console.log(messageBody);
+        }
+
+        this.setState(prevState => ({
+          chatHistory: [...prevState.chatHistory, messageBody],
+        }))
       }
-
-
-      this.setState(prevState => ({
-        chatHistory: [...prevState.chatHistory, messageBody],
-      }))
     });
 
     // change start button text based on singleplayer or multiplayer mode
@@ -168,6 +169,12 @@ class Board extends React.Component {
   
 
   render() {
+    // keeps most recent message in view
+    if (this.state.chatHistory.length > 3) {
+      const messageBoard = document.querySelector(".ChatHistory");
+      console.log(messageBoard);
+      messageBoard.scrollTop = messageBoard.scrollHeight;
+    }
 
     let divColor = 'grey';
     if (this.state.highestTile > 64) {
