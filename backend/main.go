@@ -33,7 +33,7 @@ func setupRoutes() {
 		fmt.Fprintf(w, "Hello World")
 	})
 
-	http.HandleFunc("/wss", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
 	})
 }
