@@ -44,5 +44,5 @@ func main() {
 	setupRoutes()
 	// GET CERT.PEM AND CERT.KEY
 	//log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "cert.key", nil))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
