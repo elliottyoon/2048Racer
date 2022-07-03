@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://137.184.66.64:8080/ws")
+var socket = new WebSocket("wss://2048now.com/ws")
 
 let connect = cb => {
     console.log("Attempting Connection...");
