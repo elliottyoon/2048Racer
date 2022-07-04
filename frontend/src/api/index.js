@@ -1,6 +1,6 @@
 var socket = new WebSocket("wss://2048now.com/ws")
 
-let connect = cb => {
+let connect = (updateMB, cb) => {
     console.log("Attempting Connection...");
   
     socket.onopen = () => {
@@ -14,6 +14,7 @@ let connect = cb => {
   
     socket.onclose = event => {
       console.log("Socket Closed Connection: ", event);
+      updateMB("You have been disconnected.");
     };
   
     socket.onerror = error => {

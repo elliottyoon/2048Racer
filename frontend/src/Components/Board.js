@@ -44,6 +44,7 @@ class Board extends React.Component {
     this.callStopTime = this.callStopTime.bind(this);
     this.resetBoard = this.resetBoard.bind(this);
     this.updateHighestTile = this.updateHighestTile.bind(this);
+    this.updateMessageBoard = this.updateMessageBoard.bind(this);
 
     this.startTimeForAll = this.startTimeForAll.bind(this);
     this.hideModals = this.hideModals.bind(this);
@@ -122,9 +123,32 @@ class Board extends React.Component {
     this.setState(stateChanges);
   }
 
+  updateMessageBoard(message) {
+    const prevState = this.state.chatHistory;
+    if (prevState.length <= 0) {
+      this.setState({
+        chatHistory: [message]
+      })
+    } else {
+      this.setState({
+        chatHistory: [...prevState, message]
+      })
+    }
+    // if (prevState.length > 0) {
+    //   this.setState({
+    //     chatHistory: [...prevState.chatHistory, message]
+    //   });
+    // } else {
+    //   this.setState({
+    //     chatHistory: [message]
+    //   })
+    // }
+
+  }
+
 
   componentDidMount() {
-    connect((msg) => {
+    connect(this.updateMessageBoard, (msg) => {
       // handles different messages
       let messageBody = JSON.parse(msg.data).body;
 
@@ -172,7 +196,7 @@ class Board extends React.Component {
     // keeps most recent message in view
     if (this.state.chatHistory.length > 3) {
       const messageBoard = document.querySelector(".ChatHistory");
-      console.log(messageBoard);
+      //console.log(messageBoard);
       messageBoard.scrollTop = messageBoard.scrollHeight;
     }
 
