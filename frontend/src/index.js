@@ -8,7 +8,6 @@ import './index.css'
 
 import AI from './Components/AI.js';
 import Board from './Components/Board.js';
-import PrivacyPolicy from './Components/PrivacyPolicy';
 import Help from './Components/Help';
 
 import {
@@ -41,7 +40,6 @@ root.render(
     <Routes>
       <Route path="/" element={<Game />} />
       <Route path="/ai" element={<AI />}/>
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/how-to-play" element={<Help />} />
     </Routes>
   </Router>
@@ -54,12 +52,7 @@ function Footer() {
                 <Link to="/how-to-play">
                   <FontAwesomeIcon icon={ faQuestionCircle } className="footer-icon"/>Help
                 </Link>
-              </li>
-              <li>
-                <Link to="/privacy-policy">
-                  <FontAwesomeIcon icon={ faLock } className="footer-icon"/>Privacy
-                </Link>
-              </li>
+              </li> 
               <li>
                 <a href="https://github.com/elliottyoon/2048Racer">
                   <FontAwesomeIcon icon={ faCode } className="footer-icon"/>Github

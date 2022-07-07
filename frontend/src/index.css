@@ -325,11 +325,16 @@ h1.title {
 
 /* ======== Privacy Policy ============= */
 .info {
+  position: absolute;
   margin-top: 10vh;
   margin-left: 30vw;
   margin-right: 30vw;
+  left: 0;
+  right: 0;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
   Helvetica, Arial, "Lucida Grande", sans-serif;
+  overflow-y: scroll;
+  height: 80vh;
 }
 
 .info b {

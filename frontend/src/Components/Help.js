@@ -6,8 +6,10 @@ class Help extends React.Component {
     return (
       <div className="info">
         <h1>How to Play</h1>
-        <p className="warning">As of June 27, 2022, only client-side functionalities work.</p>
-        <p>Press the arrow keys or WASD to move the tiles in the desired direction. 
+        <p className="warning">If you are inactive for 60 consecutive seconds, you will be disconnected from the server and have to reconnect by refreshing the page.</p>
+        <p>To start a race for everyone in the lobby, press the 'Start Race' button. To reset board state, press the reset button (this will not reset the race timer for anyone).
+          Press the arrow keys or WASD to move the tiles in the desired direction. 
+          
           <br></br> <br></br>
           If a tile runs into another tile of the same value, the two will merge into one tile of double value! 
           <br></br><br></br>
