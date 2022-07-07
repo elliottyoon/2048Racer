@@ -1,8 +1,8 @@
 function isGameOver(gameState) {
-    if (numEmptySpacesAvailable > 0) {
+    if (numEmptySpacesAvailable(gameState) > 0) {
         return false;
     }
-
+    console.log(gameState);
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 3; j++) {
             if (gameState[i][j] == gameState[i][j+1]) {
