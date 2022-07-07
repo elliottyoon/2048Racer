@@ -99,12 +99,16 @@ class Board extends React.Component {
   hideModals() {
     let winModal = document.querySelector("#game-won");
     let loseModal = document.querySelector("#game-lost");
+    let resetModal = document.querySelector("#game-reset");
  
     if (!winModal.classList.contains("visually-hidden")) {
       winModal.classList.add("visually-hidden");
     }
     if (!loseModal.classList.contains("visually-hidden")) {
       loseModal.classList.add("visually-hidden");
+    }
+    if (!resetModal.classList.contains("visually-hidden")) {
+      resetModal.classList.add("visually-hidden");
     }
   }
   updateHighestTile(update) {
@@ -164,6 +168,7 @@ class Board extends React.Component {
           this.callStopTime();
           // and you didn't win
           if (this.state.highestTile < 2048) {
+            document.querySelector("#game-reset").classList.add("visually-hidden");
             document.querySelector("#game-lost").classList.remove("visually-hidden");
           }
           console.log(messageBody);
@@ -227,6 +232,7 @@ class Board extends React.Component {
           </aside>
           <main>
             <Modal value="Cowabunga you won!" id="game-won"/>
+            <Modal value="No more possible moves. Reset and try again!" id="game-reset"/>
             <Modal value="Better luck next time!" id="game-lost"/>
             <BoardContainer renderSquare={this.renderSquare}/>
             <TileContainer 

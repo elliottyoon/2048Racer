@@ -227,6 +227,10 @@ h1.title {
   background: rgba(238, 228, 218, 0.73); 
   color: #282c34;
 }
+#game-reset {
+  background: rgba(238, 228, 218, 0.73); 
+  color: #282c34;
+}
 
 .game-message {
   display: flex;

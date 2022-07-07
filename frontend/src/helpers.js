@@ -1,3 +1,20 @@
+function isGameOver(gameState) {
+    if (numEmptySpacesAvailable > 0) {
+        return false;
+    }
+
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (gameState[i][j] == gameState[i][j+1]) {
+                return false;
+            }
+            if (gameState[j][i] == gameState[j+1][i]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 function findFurthestOpenSpace(index, arr, lendpoint) {
     // iterates backward through array starting at starting index and looks for 
@@ -370,6 +387,7 @@ function move(gameState, dir) {
 
 
 export {
+    isGameOver,
     adjacentTileMatchesAvailable, 
     generateRandomTile, 
     maxValue,

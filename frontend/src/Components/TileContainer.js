@@ -1,6 +1,6 @@
 import React from 'react';
 import Tile from './Tile.js'
-import {slideUp, slideDown, slideLeft, slideRight,
+import {isGameOver, slideUp, slideDown, slideLeft, slideRight,
         generateRandomTile } from '../helpers.js'
 
 import { ping } from '../api/index.js'
@@ -83,6 +83,12 @@ class TileContainer extends React.Component {
         }
         if (updated) {
             this.props.updateHighestTile(tileValPlaceholder);
+        }
+
+        if (isGameOver(this.state.gameState)) {
+            if (document.querySelector("#game-reset").classList.contains("visually-hidden")) {
+                document.querySelector("#game-reset").classList.remove("visually-hidden");
+            }
         }
     }
 
