@@ -283,7 +283,7 @@ h1.title {
 .ChatHistory {
   font-size: 10px;
   height: 70px;
-  width: 120px;
+  width: 90%;
   overflow-y: scroll;
 }
 

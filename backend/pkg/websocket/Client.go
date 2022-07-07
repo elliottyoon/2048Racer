@@ -22,15 +22,27 @@ type Message struct {
 
 func handleMessage(body string, c *Client) string {
 	switch body {
-	case "Start Time":
+	case "POST:StartTime":
 		// this is the equivalent to Date.getTime() in Javascript, which we will use
 		currTime := time.Now().UTC().UnixNano() / 1e6
 		fmt.Printf("Current time: %v\n", currTime)
-		return "StartTime: " + strconv.FormatInt(currTime, 10)
-	case "User Won":
-		return "Player " + c.ID + " won!"
+		return "EVENT:StartTime:" + strconv.FormatInt(currTime, 10)
+	case "EVENT:UserWon:":
+		return "EVENT:PlayerWin:" + c.ID
+
+		// API requests
+	case "GET:GameState":
+		return ""
+	case "GET:WinningTile":
+		return "2048"
+	case "GET:TileOdds": // %2, %4
+		return "90,10"
+	case "CONNECT:ConnectToUI":
+		return "" // this shouldn't be in this function
+		// abstract out so that handler first looks at header
 	}
 	return body
+
 }
 
 func (c *Client) Read() {

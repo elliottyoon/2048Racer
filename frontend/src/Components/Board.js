@@ -115,7 +115,7 @@ class Board extends React.Component {
     // winning condition
     if (update == 2048) {
       this.callStopTime();
-      sendMsg('User Won'); // keep in mind that this will break the DOM if client is attempting to connect to ws server
+      sendMsg('EVENT:UserWon:'); // keep in mind that this will break the DOM if client is attempting to connect to ws server
       let modal = document.querySelector("#game-won")
       modal.classList.remove("visually-hidden");
     }
@@ -152,25 +152,46 @@ class Board extends React.Component {
       // handles different messages
       let messageBody = JSON.parse(msg.data).body;
 
-      // TODO: standardize messges so people don't name themselves "StartTime" or something
-      if (messageBody != "ping") {
-        if (messageBody.includes("StartTime")) {
-          const utcStartTime = Number(messageBody.slice(11));
+      if (messageBody.length > ("CONNECTION:").length && messageBody.startsWith("CONNECTION:")) {
+        let requestHeader = messageBody.slice(0, ("CONNECTION:").length);
+        let requestBody = messageBody.slice(requestHeader.length);
+
+        if (requestBody.startsWith("CONNECT:")) {
+          let clientId = requestBody.slice(("CONNECT:").length)
+          messageBody = `Player ${clientId} joined.`;
+        }
+        else if (requestBody.startsWith("DISCONNECT:")) {
+          let clientId = requestBody.slice(("DISCONNECT:").length)
+          messageBody = `Player ${clientId} disconnected.`;
+        }
+        console.log(requestBody);
+      }
+
+      if (messageBody.length > ("EVENT:").length && messageBody.startsWith("EVENT:")) {// length of EVENT:
+        let requestHeader = messageBody.slice(0, ("EVENT:").length); // EVENT:
+        let requestBody = messageBody.slice(requestHeader.length); // rest of request
+        
+        console.log(requestBody);
+        if (requestBody.startsWith("StartTime:")) {
+          const utcStartTime = Number(messageBody.slice(("EVENT:").length + ("StartTime:").length)); // len(EVENT:) + len(StartTime)
           this.timeStarter(utcStartTime)
           this.resetBoard();
-          messageBody = "Starting race..."
-        }
-        if (messageBody.includes("won")) {
+          console.log('hi');
+          messageBody = "Starting race...";
+        } 
+        else if (requestBody.startsWith("PlayerWin:")) {
           this.callStopTime();
           // and you didn't win
           if (this.state.highestTile < 2048) {
             document.querySelector("#game-lost").classList.remove("visually-hidden");
           }
-          console.log(messageBody);
-        } else {
-          console.log(messageBody);
-        }
 
+          let playerWinID = requestBody.slice(("PlayerWin:".length)) // PlayerWin.length + 1
+          messageBody = `Player ${playerWinID} won!`;
+        }
+      }
+      console.log(messageBody);
+      if (messageBody.length > 0 && messageBody != "ping") {
         this.setState(prevState => ({
           chatHistory: [...prevState.chatHistory, messageBody],
         }))

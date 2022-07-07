@@ -1,5 +1,5 @@
 //var socket = new WebSocket("wss://2048now.com/ws")
-let socket = new WebSocket("ws://localhost:8080/ws")
+let socket = new WebSocket("ws://localhost:80/ws")
 
 let connect = (updateMB, cb) => {
     console.log("Attempting Connection...");
@@ -34,7 +34,7 @@ let ping = () => {
 }
 
 let startServerTime = () => {
-  socket.send("Start Time");
+  socket.send("POST:StartTime");
 }
 
 let getSocket = () => {

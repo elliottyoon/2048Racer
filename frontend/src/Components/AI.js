@@ -16,6 +16,7 @@ import basicCorner from '../api/algorithms/basiccorner.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRedo} from '@fortawesome/free-solid-svg-icons';
+import { connect } from '../api';
 
 class AI extends React.Component {
     constructor(props) {
@@ -118,8 +119,11 @@ class AI extends React.Component {
     /* ====================================== Lifecycle Methods */
 
     componentDidMount() {
+        connect(() => {}, (msg) => {
+            
+        })
         //this.basicCorner(this.slideRight, this.slideLeft, this.slideDown);
-        this.run();
+        //this.run();
     }
 
 

@@ -32,7 +32,7 @@ func (pool *Pool) Start() {
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client, _ := range pool.Clients {
 				fmt.Println(client)
-				client.Conn.WriteJSON(Message{Type: 1, Body: "Player " + strconv.Itoa(idAssign-1) + " joined..."})
+				client.Conn.WriteJSON(Message{Type: 1, Body: "CONNECTION:CONNECT:" + strconv.Itoa(idAssign-1)})
 			}
 			break
 
@@ -41,7 +41,7 @@ func (pool *Pool) Start() {
 			delete(pool.Clients, client)
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client, _ := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: 1, Body: "Player " + clientId + " disconnected"})
+				client.Conn.WriteJSON(Message{Type: 1, Body: "CONNECTION:DISCONNECT:" + clientId})
 			}
 			break
 
