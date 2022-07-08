@@ -39,7 +39,6 @@ class AI extends React.Component {
 
         this.iterativeDeep = iterativeDeep.bind(this);
 
-        this.basicCorner = this.basicCorner.bind(this);
         this.run = this.run.bind(this);
 
         // newGameState => sets TileContainer.state.gameState = newGameState
@@ -100,28 +99,7 @@ class AI extends React.Component {
 
 
     getBestMove() {
-        return this.iterativeDeep();
-    }
-
-    // iterative deepening over alpha-beta search
-    iterativeDeep() {
-        let startTime = (new Date()).getTime(); 
-        let depth = 0;
-        let best = null;
-        do {
-            let newBest = this.search(depth, -10000, 10000, 0, 0, true, this.getGameState());
-
-            if (newBest.move == -1) {
-                // break;
-            } else {
-                best = newBest;
-            }
-            depth++;
-
-        // } while ((new Date()).getTime() - startTime < this.state.thinkTime);
-        } while( depth < 4 );
-        console.log(best);
-        return best;
+        return this.iterativeDeep(this.getGameState);
     }
 
     run() {
