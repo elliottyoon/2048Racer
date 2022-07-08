@@ -1,23 +1,24 @@
 import {
-    slideUp, slideRight, slideDown, slideLeft, move,
-    transpose, maxValue, numIslands, 
+    move, transpose, maxValue, numIslands, 
     numEmptySpacesAvailable, emptySpacesAvailable, 
-    slideInDirection
 } from '../../helpers.js';
 
 // static evaluation function
 let evaluation = function(gameState) {
     const numEmptyCells = numEmptySpacesAvailable(gameState);
+    const normalizedMax = Math.log(maxValue(gameState)) / Math.log(2);
     // parameter weights, may need additional fitting
-    var smoothWeight = 0.1,
+    let smoothWeight = 0.1,
         monotonicityWeight   = 1.0,
         emptyWeight  = 2.7,
+        cornerWeight = 5,
         maxWeight    = 1.0;
 
     return smoothWeight       * smoothness(gameState) 
         +  monotonicityWeight * monotonicity(gameState) 
         +  emptyWeight        * Math.log(numEmptyCells)
-        +  maxWeight          * maxValue(gameState);
+        +  maxWeight          * normalizedMax;
+        // +  cornerWeight       * Math.log(gameState[0][0])  ;
 
 }
 // measure of whether the values of the tiles are strictly increasing or decreasing in left/right and up/down dirs
@@ -42,7 +43,7 @@ let monotonicity = function(gs) {
                 next++;
             }
             // all tiles in row are empty
-            if (next == 4) next = 3;
+            if (next >= 4) next = 3;
             // getting what power of 2 the current tile value is (sets 0 if empty)
             let currentVal = (gs[i][curr] != '') ? Math.log(gs[i][curr]) / Math.log(2) : 0;
             let nextVal = (gs[i][next] != '') ? Math.log(gs[i][next]) / Math.log(2) : 0;
@@ -69,10 +70,10 @@ let monotonicity = function(gs) {
                 next++;
             }
             // all tiles in row are empty
-            if (next >= 4) next--;
+            if (next >= 4) next = 3;
             // getting what power of 2 the current tile value is (sets 0 if empty)
             let currentVal = (gs[curr][j] != '') ? Math.log(gs[curr][j]) / Math.log(2) : 0;
-            let nextVal = (gs[curr][j] != '') ? Math.log(gs[curr][j]) / Math.log(2) : 0;
+            let nextVal = (gs[next][j] != '') ? Math.log(gs[next][j]) / Math.log(2) : 0;
             // adds to strictly decreasing weight
             if (currentVal > nextVal) {
                 totals[2] += nextVal - currentVal;
@@ -94,7 +95,6 @@ let monotonicity = function(gs) {
 // (in log spaces to convey # of merges that need to occur to merge the two)
 let smoothness = function(gameState) {
     const gs = gameState;
-    const gsT = transpose(gs);
     let smoothness = 0;
 
     for (let i = 0; i < 4; i++) {
@@ -113,12 +113,12 @@ let smoothness = function(gameState) {
                 }
 
                 // vertical dir
-                next = j + 1
-                while (next < 4 && gsT[i][next] == '') {
+                next = i + 1
+                while (next < 4 && gs[next][j] == '') {
                     next++;
                 }
                 if (next < 4) {
-                    let targetVal = Math.log(gsT[i][next]) / Math.log(2);
+                    let targetVal = Math.log(gs[next][j]) / Math.log(2);
                     smoothness -= Math.abs(val - targetVal);
                 }
 
@@ -148,7 +148,7 @@ let search = function(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
                         move: dir,
                         score: 10000,
                         positions: positions,
-                        cutoff: cutoffs
+                        cutoffs: cutoffs
                     };
                 }
                 if (depth == 0) {
@@ -158,7 +158,7 @@ let search = function(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
                     }
                 } else {
                     // AI's turn
-                    res = search(depth-1, bestScore, beta, positions, cutoffs, false, newGameState);
+                    res = search(depth-1, bestScore, beta, positions, cutoffs, true, newGameState);
                     // AI winning condition
                     if (res.score > 9900) {
                         res.score--; 
@@ -248,7 +248,7 @@ let search = function(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
                 cutoffs++;
                 return {
                     move: null,
-                    score: alpha,
+                    score: beta,
                     positions: positions,
                     cutoffs: cutoffs
                 }
@@ -278,8 +278,9 @@ export default function iterativeDeep(getGameState, thinkTime) {
         }
         depth++;
 
-    } while ((new Date()).getTime() - startTime < thinkTime);
-    // } while( depth < 4 );
+    // } while ((new Date()).getTime() - startTime < thinkTime);
+    } while( depth < 5 );
     console.log(best);
-    return best;
+
+    return best
 }

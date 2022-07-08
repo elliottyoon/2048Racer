@@ -1,5 +1,4 @@
-//var socket = new WebSocket("wss://2048now.com/ws")
-let socket = new WebSocket("ws://localhost:80/ws")
+var socket = new WebSocket("wss://2048now.com/ws")
 
 let connect = (updateMB, cb) => {
     console.log("Attempting Connection...");

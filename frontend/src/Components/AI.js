@@ -123,7 +123,7 @@ class AI extends React.Component {
             
         })
         //this.basicCorner(this.slideRight, this.slideLeft, this.slideDown);
-        //this.run();
+        this.run();
     }
 
 
