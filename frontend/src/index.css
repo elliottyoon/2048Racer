@@ -18,12 +18,16 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
-  height: 98vh;
+  width: 100vw;
+  height: 100vh;
 }
 
 /* ================ Landing Page ================ */
 .menu {
+	
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
