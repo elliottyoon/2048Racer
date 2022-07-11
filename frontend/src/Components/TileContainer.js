@@ -40,7 +40,9 @@ class TileContainer extends React.Component {
  
         // arrow key functionality
         window.addEventListener('keydown', this.handleKeyPress)
-        window.addEventListener('click', ping);
+        if (!props.ai) {
+            window.addEventListener('click', ping);
+        }
 
         // add first two random tiles
         const rand1 = generateRandomTile(this.state.gameState);

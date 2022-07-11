@@ -2,67 +2,89 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle, faLock, faCode, faBoltLightning} from '@fortawesome/free-solid-svg-icons';
+import { faFlag, faBoltLightning} from '@fortawesome/free-solid-svg-icons';
 
-import './index.css'
+import './index.css';
 
 import AI from './Components/AI.js';
-import Board from './Components/Board.js';
-import Help from './Components/Help';
+import Racer from './Components/Racer.js';
+import Help from './Components/Help.js';
 
 import {
   BrowserRouter as Router,
+  useNavigate,
   Routes,
   Route,
   Link
 } from "react-router-dom"
 
 
-
-class Game extends React.Component {
-
-  render() {
-    return (
-      <div className="window">
-        <div className="top"></div>
-        <Board />
-        <Footer />
-      </div>
-    );
-  }
-}
-
 // ========================================
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Router>
-    <Routes>
-      <Route path="/" element={<Game />} />
-      <Route path="/ai" element={<AI />}/>
-      <Route path="/how-to-play" element={<Help />} />
-    </Routes>
-  </Router>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Menu />} />
+        <Route path="/racer" element={<Racer />} />
+        <Route path="/ai" element={<AI />}/>
+        <Route path="/how-to-play" element={<Help />} />
+      </Routes>
+    </Router>
 );
 
-function Footer() {
-  return <div className="footer">
-            <ul>
-              <li>
-                <Link to="/how-to-play">
-                  <FontAwesomeIcon icon={ faQuestionCircle } className="footer-icon"/>Help
-                </Link>
-              </li> 
-              <li>
-                <a href="https://github.com/elliottyoon/2048Racer">
-                  <FontAwesomeIcon icon={ faCode } className="footer-icon"/>Github
-                </a>
-              </li>
-              <li>
-                <Link to="/ai">
-                  <FontAwesomeIcon icon={ faBoltLightning } className="footer-icon"/>AI 
-                </Link>
-              </li>
-            </ul>
+function GameButton(props) {
+    const navigate = useNavigate();
+    let dest = props.dest;  
+    let handleClick; 
+
+    switch (dest) {
+        case "github":
+            handleClick = function() {
+                window.open("https://github.com/elliottyoon/2048Racer");
+            }
+            return (
+                <button className="external-button" type="button" onClick={handleClick}>
+                    View the source code.
+                </button>
+            )
+        case "racer":
+            handleClick = function() {
+                navigate("/racer");
+            }
+            return (
+                <button className="menuButton flag-button" type="button" onClick={handleClick}>
+                    <FontAwesomeIcon icon={ faFlag } className="footer-icon"/>Start racing 
+                </button>
+                )
+
+        case "ai":
+            handleClick = function() {
+                navigate("/ai");
+            }
+            return (
+                <button className="menuButton ai-button" type="button" onClick={handleClick}>
+                    <FontAwesomeIcon icon={ faBoltLightning } className="footer-icon"/>Watch an AI
+                </button>
+                )
+    }
+
+}
+
+function Menu() {
+  return <div className="menu">
+            <h1>Welcome to 2048Racer</h1>
+            <div className="menu-buttons">
+                <GameButton dest="racer" />
+                or 
+                <GameButton dest="ai" />
+            </div>
+
+
+            <GameButton dest="github" />
+
+
+            
+            
           </div>;
 }

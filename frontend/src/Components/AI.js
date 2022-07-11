@@ -130,7 +130,9 @@ class AI extends React.Component {
                     <TileContainer 
                         highestTile={this.state.highestTile}
                         onMount={this.onBoardMount}
+                        ai={true}
                         updateHighestTile={(update) => {}}/>
+                        
                 </div>
                 <div className="bottom">
                     <button className={"reset-board"}

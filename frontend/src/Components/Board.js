@@ -152,6 +152,23 @@ class Board extends React.Component {
 
 
   componentDidMount() {
+    // solves (ableit jungle code) the problem where 
+    // client wouldn't succesfully connect when redirected
+    // from landing page
+    (function()
+    {
+      if( window.localStorage )
+      {
+        if( !localStorage.getItem('firstLoad') )
+        {
+          localStorage['firstLoad'] = true;
+          window.location.reload();
+        }  
+        else
+          localStorage.removeItem('firstLoad');
+      }
+    })(); 
+
     connect(this.updateMessageBoard, (msg) => {
       // handles different messages
       let messageBody = JSON.parse(msg.data).body;
@@ -198,6 +215,8 @@ class Board extends React.Component {
   
 
   render() {
+
+
     // keeps most recent message in view
     if (this.state.chatHistory.length > 3) {
       const messageBoard = document.querySelector(".ChatHistory");
@@ -238,6 +257,7 @@ class Board extends React.Component {
             <TileContainer 
                 highestTile={this.state.highestTile}
                 onMount={this.onBoardMount}
+                ai={false}
                 updateHighestTile={this.updateHighestTile}/>
           </main> 
           <div className="bottom">

@@ -280,7 +280,7 @@ export default function iterativeDeep(getGameState, thinkTime) {
 
     // } while ((new Date()).getTime() - startTime < thinkTime);
     } while( depth < 5 );
-    console.log(best);
+    console.log(best === null ? "No viable moves" : best);
 
     return best
 }
