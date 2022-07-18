@@ -352,7 +352,7 @@ h1.title {
   font-size: 10px;
   height: 70px;
   width: calc(var(--aside-button-font-size) * 8);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .hidden {

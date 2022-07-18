@@ -88,8 +88,13 @@ class TileContainer extends React.Component {
         }
 
         if (isGameOver(this.state.gameState)) {
-            if (document.querySelector("#game-reset").classList.contains("visually-hidden")) {
-                document.querySelector("#game-reset").classList.remove("visually-hidden");
+            try {
+                if (document.querySelector("#game-reset").classList.contains("visually-hidden")) {
+                    document.querySelector("#game-reset").classList.remove("visually-hidden");
+                }
+            }
+            catch {
+                console.log('modal not found!')
             }
         }
     }
