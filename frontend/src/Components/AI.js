@@ -7,10 +7,7 @@ import TileContainer from './TileContainer';
 import iterativeDeep from '../api/algorithms/minimax.js';
 
 import {
-    slideUp, slideRight, slideDown, slideLeft, move,
-    transpose, maxValue, numIslands, 
-    numEmptySpacesAvailable, emptySpacesAvailable, 
-    slideInDirection
+    slideUp, slideRight, slideDown, slideLeft, slideInDirection
 } from '../helpers.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,11 +19,10 @@ class AI extends React.Component {
 
         this.state = {
             highestTile: 0,
+            running: false,
             gameLost: false,
-            thinkTime: 100 // in milliseconds
+            thinkTime: 50 // in milliseconds
         }
-
-        this.running = true; // is ai currently running
 
         this.renderSquare = this.renderSquare.bind(this);
         this.updateHighestTile = this.updateHighestTile.bind(this);
@@ -40,6 +36,7 @@ class AI extends React.Component {
         this.iterativeDeep = iterativeDeep.bind(this);
 
         this.run = this.run.bind(this);
+        this.stop = this.stop.bind(this);
 
         // newGameState => sets TileContainer.state.gameState = newGameState
         this.setGameState = null;
@@ -103,8 +100,14 @@ class AI extends React.Component {
     }
 
     run() {
+        this.setState({
+            running: true
+        })
         let intervalId = setInterval(() => {
             // if 2048 or something
+            if (!this.state.running) {
+                clearInterval(intervalId);
+            }
             // => clearInterval(intervalID)
             let bestMove = this.getBestMove();
             if (bestMove === null) {
@@ -114,17 +117,36 @@ class AI extends React.Component {
             }
         }, this.state.thinkTime);
     }
+    stop() {
+        this.setState({
+            running: false,
+        })
+    }
 
     /* ====================================== Lifecycle Methods */
 
     componentDidMount() {
-        this.run();
+        //this.run();
     }
 
 
     render() {
         return (
             <div className="ai-container">
+                <div className="ai-navbar">
+                    <button className={this.state.running ? "ai-stop-btn ai-navbar-btn" : "ai-start-btn ai-navbar-btn"} onClick={this.state.running ? this.stop : this.run}>
+                        {this.state.running ? 'Stop' : 'Start'}
+                    </button>
+                    <button className={"reset-board"}
+                        id="nav-end"
+                        tabIndex={"0"}
+                        //onClick={this.boardSetter}
+                        onClick={(e) => {this.resetGameState()}}
+                        aria-label="Reset board"
+                        data-balloon-pos="right">
+                    <FontAwesomeIcon icon={ faRedo } size="lg"/>
+                    </button>
+                </div>
                 <div className="ai-board">
                     <BoardContainer renderSquare={this.renderSquare}/>
                     <TileContainer 
@@ -134,17 +156,9 @@ class AI extends React.Component {
                         updateHighestTile={(update) => {}}/>
                         
                 </div>
-                <div className="bottom">
-                    <button className={"reset-board"}
-                        tabIndex={"0"}
-                        //onClick={this.boardSetter}
-                        onClick={() => {this.resetGameState()}}
-                        aria-label="Reset board"
-                        data-balloon-pos="down">
-                    <FontAwesomeIcon icon={ faRedo } size="lg"/>
-                    </button>
-                </div>
+                
             </div>
+            
             
         )
     }
