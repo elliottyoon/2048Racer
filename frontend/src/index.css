@@ -421,7 +421,7 @@ h1.title {
 .ai-navbar {
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 
 }
 /* .ai-start-btn {
@@ -443,6 +443,7 @@ h1.title {
   margin: 1em;
   width: 4em;
   height: 2.5em;
+  text-align: center;
 
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: bold;
