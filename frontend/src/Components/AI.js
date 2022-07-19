@@ -21,7 +21,7 @@ class AI extends React.Component {
             highestTile: 0,
             running: false,
             gameLost: false,
-            thinkTime: 50 // in milliseconds
+            thinkTime: 80 // in milliseconds
         }
 
         this.renderSquare = this.renderSquare.bind(this);
@@ -96,7 +96,7 @@ class AI extends React.Component {
 
 
     getBestMove() {
-        return this.iterativeDeep(this.getGameState);
+        return this.iterativeDeep(this.getGameState, this.state.thinkTime);
     }
 
     run() {
@@ -112,6 +112,9 @@ class AI extends React.Component {
             let bestMove = this.getBestMove();
             if (bestMove === null) {
                 clearInterval(intervalId);
+                this.setState({
+                    running: false,
+                })
             } else {
                 slideInDirection(this.getGameState(), this.setGameState, bestMove.move);
             }
@@ -123,18 +126,15 @@ class AI extends React.Component {
         })
     }
 
-    /* ====================================== Lifecycle Methods */
-
-    componentDidMount() {
-        //this.run();
-    }
-
 
     render() {
         return (
             <div className="ai-container">
                 <div className="ai-navbar">
-                    <button className={this.state.running ? "ai-stop-btn ai-navbar-btn" : "ai-start-btn ai-navbar-btn"} onClick={this.state.running ? this.stop : this.run}>
+                    <button className={this.state.running ? "ai-stop-btn ai-navbar-btn" : "ai-start-btn ai-navbar-btn"} 
+                            onClick={this.state.running ? this.stop : this.run}
+                            aria-label={this.state.running ? "Stop algorithm" : "Start algorithm"} 
+                            data-balloon-pos="left">
                         {this.state.running ? 'Stop' : 'Start'}
                     </button>
                     <button className={"reset-board"}

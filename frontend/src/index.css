@@ -542,6 +542,11 @@ h1.title {
     }
 
 
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+
     /* .board {
       display: flex;
       flex-direction: column;

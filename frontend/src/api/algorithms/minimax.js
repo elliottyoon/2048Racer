@@ -265,7 +265,7 @@ let search = function(depth, alpha, beta, positions, cutoffs, playerTurn, gs) {
 
 // iterative deepening over alpha-beta search
 export default function iterativeDeep(getGameState, thinkTime) {
-    let startTime = (new Date()).getTime(); 
+    //let startTime = (new Date()).getTime(); 
     let depth = 0;
     let best = null;
     do {
@@ -278,7 +278,7 @@ export default function iterativeDeep(getGameState, thinkTime) {
         }
         depth++;
 
-    // } while ((new Date()).getTime() - startTime < thinkTime);
+    //} while ((new Date()).getTime() - startTime < thinkTime);
     } while( depth < 5 );
     console.log(best === null ? "No viable moves" : best);
 
