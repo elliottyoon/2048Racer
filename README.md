@@ -3,7 +3,7 @@ Race your friends to the 2048 tile or watch an AI play it for you!
 Play [here](https://2048-racer.vercel.app/)!
 
 ### Note
-* As of **October 4, 2022**, the back end is no longer hosted on the cloud (i.e. only single-player modes are available) 
+* As of **October 4, 2022**, the back end is no longer hosted on the cloud (i.e. only AI mode is available) 
 
 ---
 
